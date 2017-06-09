@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
-from .permissions import IsCandidatOrAdmin
+from .permissions import IsOwnerOrAdmin
 
 from people.models import Artist
 
@@ -43,7 +43,7 @@ class StudentAutocompleteSearchViewSet(HaystackViewSet):
 class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     serializer_class = StudentApplicationSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCandidatOrAdmin)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrAdmin)
     filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('artist__user__username',)
     filter_fields = ('application_completed',
@@ -57,7 +57,6 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                        'artist__user__last_name',
                        'artist__user__profile__nationality',)
 
-
     def create(self, request, *args, **kwargs):
         user = self.request.user
         # Chek if we can create application
@@ -66,7 +65,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         # Check exist application fot this application session
         setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-        user_application =  StudentApplication.objects.filter(
+        user_application = StudentApplication.objects.filter(
             artist__user=user.id,
             promotion=setup.promotion
         ).first()
@@ -83,11 +82,9 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 artist=user_artist,
                 promotion=setup.promotion
             )
-            user_application = student_application.save()
-
-
+            user_application = user_application.save()
+        # return app
         return user_application
-
 
     def list(self, request, *args, **kwargs):
         user = self.request.user
