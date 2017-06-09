@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsCandidatOrAdmin
 
 from people.models import Artist
 
@@ -43,7 +43,7 @@ class StudentAutocompleteSearchViewSet(HaystackViewSet):
 class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     serializer_class = StudentApplicationSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCandidatOrAdmin)
     filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('artist__user__username',)
     filter_fields = ('application_completed',
@@ -106,18 +106,6 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         # candidate can't update candidature when she's expired, admin can !
         if self.candidature_hasexpired() and not user.is_staff:
             errors = {'candidature': 'expired'}
-            return Response(errors, status=status.HTTP_403_FORBIDDEN)
-        # Only admin user can update selection's fields
-        if (
-            not user.is_staff and (
-                request.data.get('application_complete') or
-                request.data.get('selected_for_interview') or
-                request.data.get('selected') or
-                request.data.get('wait_listed') or
-                request.data.get('application_complete') or
-                request.data.get('physical_content_received'))
-        ):
-            errors = {'Error': 'Field permission denied'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
         # send email when candidature to admin and USER (who click) is completed
