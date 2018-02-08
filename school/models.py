@@ -21,7 +21,7 @@ class Promotion(models.Model):
     ending_year = models.PositiveSmallIntegerField()
 
     def __unicode__(self):
-        return u'{0} ({1}-{2})'.format(self.name, self.starting_year, self.ending_year)
+        return '{0} ({1}-{2})'.format(self.name, self.starting_year, self.ending_year)
 
 
 class Student(models.Model):
@@ -35,7 +35,7 @@ class Student(models.Model):
     artist = models.OneToOneField(Artist, related_name='student')
 
     def __unicode__(self):
-        return u'{0} ({1})'.format(self.user, self.number)
+        return '{0} ({1})'.format(self.user, self.number)
 
 
 class StudentApplicationSetup(models.Model):
@@ -229,4 +229,4 @@ class StudentApplication(models.Model):
         super(StudentApplication, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return u"{0} ({1})".format(self.current_year_application_count, self.artist)
+        return "{0} ({1})".format(self.current_year_application_count, self.artist)

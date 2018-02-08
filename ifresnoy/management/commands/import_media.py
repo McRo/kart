@@ -32,7 +32,7 @@ class Command(BaseCommand):
 
             path = "%s/panorama%d/%s_%s/image" % (dirpath, pano_no, lastname, firstname)
 
-            print "Feeding %s by %s" % (artwork.title, path)
+            print("Feeding %s by %s" % (artwork.title, path))
 
             if not os.path.isdir(path):
                 raise Exception("Dir not found")
@@ -45,16 +45,16 @@ class Command(BaseCommand):
                 elif os.path.isfile(main_visu_path_png):
                     artwork.picture.save(os.path.basename(main_visu_path_png), File(open(main_visu_path_png)))
                 else:
-                    print "/!\ MAIN VISU NOT FOUND"
+                    print("/!\ MAIN VISU NOT FOUND")
 
             # insitu
             for dirpath2, dirname, filenames in os.walk(os.path.join(path, "insitu")):
                 if not len(artwork.in_situ_galleries.all()):
-                    artwork.in_situ_galleries.create(label=u"%s" % artwork.title, description=u"in situ gallery")
+                    artwork.in_situ_galleries.create(label="%s" % artwork.title, description="in situ gallery")
                 gall = artwork.in_situ_galleries.all()[0]
 
                 for name in filenames:
-                    print "-> [INSIT GAL] Adding %s" % name
+                    print("-> [INSIT GAL] Adding %s" % name)
                     full_path = os.path.join(dirpath2, name)
                     m = Medium(gallery=gall)
                     m.picture.save(os.path.basename(full_path), File(open(full_path)))
@@ -65,11 +65,11 @@ class Command(BaseCommand):
             # processus
             for dirpath2, dirname, filenames in os.walk(os.path.join(path, "processus")):
                 if not len(artwork.process_galleries.all()):
-                    artwork.process_galleries.create(label=u"%s" % artwork.title, description=u"processus gallery")
+                    artwork.process_galleries.create(label="%s" % artwork.title, description="processus gallery")
                 gall = artwork.process_galleries.all()[0]
 
                 for name in filenames:
-                    print "-> [GAL PROC] Adding %s" % name
+                    print("-> [GAL PROC] Adding %s" % name)
                     full_path = os.path.join(dirpath2, name)
                     m = Medium(gallery=gall)
                     m.picture.save(os.path.basename(full_path), File(open(full_path)))
@@ -79,8 +79,8 @@ class Command(BaseCommand):
 
             artwork.save()
 
-        for pano_no in xrange(6, 15):
-            print "----------- PANORAMA %s" % pano_no
+        for pano_no in range(6, 15):
+            print("----------- PANORAMA %s" % pano_no)
             if pano_no == 10:
                 continue
 

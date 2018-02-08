@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     # password = row[1].decode('utf-8')
                     firstname = row[2].decode('utf-8').strip().title()
                     lastname = row[3].decode('utf-8').strip().title()
-                    username = slugify(u"%s%s" % (firstname[0], "".join(lastname.split())))
+                    username = slugify("%s%s" % (firstname[0], "".join(lastname.split())))
                     # email = row[4].decode('utf-8')
                     websites = row[5].decode('utf-8')
                     # photo = row[6].decode('utf-8')
@@ -63,9 +63,9 @@ class Command(BaseCommand):
                     # Make promotion
                     # Make student
                     # Make artwork
-                    print u" * [%d] %s by %s %s (username=%s)" % (idx, title, firstname, lastname, username)
+                    print(" * [%d] %s by %s %s (username=%s)" % (idx, title, firstname, lastname, username))
                     user = User.objects.get(username=username, first_name=firstname, last_name=lastname)
-                    print "  `-- found user %s" % user
+                    print("  `-- found user %s" % user)
                     # profile = FresnoyProfile.objects.get(user=user)
 
                     try:
@@ -133,9 +133,9 @@ class Command(BaseCommand):
                     ProductionOrganizationTask.objects.get_or_create(organization=lefresnoy, production=artwork,
                                                                      task=producer)
 
-                    print "."
+                    print(".")
 
-        except Exception, e:
+        except Exception as e:
             raise CommandError('Error while parsing "%s" %s ' % (filepath, e))
 
         self.stdout.write('Successfully imported csv file "%s"' % filepath)

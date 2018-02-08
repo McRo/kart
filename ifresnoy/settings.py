@@ -8,7 +8,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
-from site_settings import *  # NOQA
+from .site_settings import *  # NOQA
 import datetime
 import os
 

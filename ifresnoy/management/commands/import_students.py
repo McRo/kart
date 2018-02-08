@@ -34,7 +34,7 @@ class Command(BaseCommand):
                     lastname = row[1].decode('utf-8').strip().title()
                     firstname = row[2].decode('utf-8').strip().title()
                     # birthdate = row[3].decode('utf-8')
-                    username = slugify(u"%s%s" % (firstname[0], "".join(lastname.split())))
+                    username = slugify("%s%s" % (firstname[0], "".join(lastname.split())))
 
                     email = row[8].decode('utf-8').strip()
 
@@ -42,22 +42,22 @@ class Command(BaseCommand):
                     # Make promotion
                     # Make student
                     # Make artwork
-                    print u" * %s %s (username=%s)" % (firstname, lastname, username)
+                    print(" * %s %s (username=%s)" % (firstname, lastname, username))
                     promotion = Promotion.objects.get(name__iexact=promotion_name)
 
                     user, created = User.objects.get_or_create(username=username, first_name=firstname,
                                                                last_name=lastname, email=email)
                     if created:
-                        print "  `-- User %s created" % user
+                        print("  `-- User %s created" % user)
                     else:
-                        print "  `-- Found %s" % user
+                        print("  `-- Found %s" % user)
                     profile, created = FresnoyProfile.objects.get_or_create(user=user)
 
                     student, created = Student.objects.get_or_create(user=user, promotion=promotion)
                     if created:
-                        print "  `-- Student %s created" % student
+                        print("  `-- Student %s created" % student)
 
-        except Exception, e:
+        except Exception as e:
             raise CommandError('Error while parsing "%s" %s ' % (filepath, e))
 
         self.stdout.write('Successfully imported csv file "%s"' % filepath)

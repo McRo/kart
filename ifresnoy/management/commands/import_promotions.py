@@ -34,11 +34,11 @@ class Command(BaseCommand):
                     promotion, created = Promotion.objects.get_or_create(name=name,
                                                                          starting_year=start_year, ending_year=end_year)
                     if created:
-                        print "%s created" % promotion
+                        print("%s created" % promotion)
 
-                    print promotion
+                    print(promotion)
 
-        except Exception, e:
+        except Exception as e:
             raise CommandError('Error while parsing "%s" %s ' % (filepath, e))
 
         self.stdout.write('Successfully imported csv file "%s"' % filepath)

@@ -13,7 +13,7 @@ class Gallery(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return u'{0} - {1}'.format(self.label, self.description)
+        return '{0} - {1}'.format(self.label, self.description)
 
     class Meta:
         verbose_name_plural = "galleries"
@@ -36,7 +36,7 @@ class Medium(models.Model):
     gallery = models.ForeignKey(Gallery, related_name='media')
 
     def __unicode__(self):
-        return u"{0} - {1}".format(self.label, self.description)
+        return "{0} - {1}".format(self.label, self.description)
 
     class Meta:
         verbose_name_plural = "media"
