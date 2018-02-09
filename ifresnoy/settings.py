@@ -46,7 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'sortedm2m',
     'django_countries',
-    'django_markdown',
+    # 'markdownx',
     'ifresnoy',
     'tastypie',
     'tastypie_swagger',

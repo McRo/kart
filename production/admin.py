@@ -55,7 +55,7 @@ class ProductionParentAdmin(PolymorphicParentModelAdmin):
     )
 
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget},
+        models.TextField: {'widget': MarkdownxModelAdmin},
     }
 
 
