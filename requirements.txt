@@ -5,7 +5,7 @@ django-countries==5.1.1
 django-extensions==1.5.5
 django-grappelli==2.7.1
 -e git+https://github.com/django-tastypie/django-tastypie#egg=django-tastypie
-djangorestframework==3.4.1
+djangorestframework==3.7.7
 django-tastypie-swagger==0.1.2
 django-languages==0.1
 djangorestframework-jwt==1.8.0

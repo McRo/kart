@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -82,26 +82,27 @@ v2_api.register(r'assets/gallery', GalleryViewSet)
 v2_api.register(r'assets/medium', MediumViewSet)
 
 
-urlpatterns = patterns('',
-                       url(r'^v2/', include(v2_api.urls)),
-                       url(r'^v2/auth/', obtain_jwt_token),
-                       url(r'^account/activate/%s/$' % settings.PASSWORD_TOKEN,
+urlpatterns = ['',
+                       path('v2/', include(v2_api.urls)),
+                       path('v2/auth/', obtain_jwt_token),
+                       path('account/activate/%s/$' % settings.PASSWORD_TOKEN,
                            'people.views.activate', name='user-activate'),
                        # django user registration
-                       url(r'^v2/rest-auth/', include('rest_auth.urls')),
-                       url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')),
+                       path('v2/rest-auth/', include('rest_auth.urls')),
+                       path('v2/rest-auth/registration/', include('rest_auth.registration.urls')),
                        # vimeo
-                       url(r'^v2/assets/vimeo/upload/token',
+                       path('v2/assets/vimeo/upload/token',
                            'assets.views.vimeo_get_upload_token', name='vimeo-upload-token'),
 
                        # api v1
-                       (r'^', include(v1_api.urls)),
-                       (r'^grappelli/', include('grappelli.urls')),
+                       path('', include(v1_api.urls)),
+                       path('grappelli/', include('grappelli.urls')),
                        # url(r'^markdownx/', include('markdownx.urls')),
-                       url(r'v1/doc/',
+                       path('v1/doc/',
                            include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
                            kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
                                    "namespace": "ifresnoy_tastypie_swagger"}),
-                       url(r'^admin/', include(admin.site.urls)) \
-                       ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       path('admin/', include(admin.site.urls)),
+                       static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
+                       static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+             ]
