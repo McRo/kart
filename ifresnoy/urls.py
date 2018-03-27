@@ -1,4 +1,6 @@
-from django.conf.urls import include, url
+# from django.conf.urls import include, url
+from django.urls import include, path
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -20,6 +22,8 @@ from people.views import (
     ArtistViewSet, UserViewSet, FresnoyProfileViewSet,
     StaffViewSet, OrganizationViewSet
 )
+from people import views as people_views
+
 from school.views import (
     PromotionViewSet, StudentViewSet,
     StudentAutocompleteSearchViewSet, StudentApplicationViewSet
@@ -33,6 +37,7 @@ from production.views import (
 )
 from diffusion.views import PlaceViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
+from assets import views as assets_views
 from assets.views import GalleryViewSet, MediumViewSet
 
 
@@ -85,14 +90,14 @@ v2_api.register(r'assets/medium', MediumViewSet)
 urlpatterns = ['',
                        path('v2/', include(v2_api.urls)),
                        path('v2/auth/', obtain_jwt_token),
-                       path('account/activate/%s/$' % settings.PASSWORD_TOKEN,
-                           'people.views.activate', name='user-activate'),
+                       path('account/activate/%s/$' % (settings.PASSWORD_TOKEN),
+                            people_views.activate, name='user-activate'),
                        # django user registration
                        path('v2/rest-auth/', include('rest_auth.urls')),
                        path('v2/rest-auth/registration/', include('rest_auth.registration.urls')),
                        # vimeo
                        path('v2/assets/vimeo/upload/token',
-                           'assets.views.vimeo_get_upload_token', name='vimeo-upload-token'),
+                           assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
 
                        # api v1
                        path('', include(v1_api.urls)),

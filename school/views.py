@@ -2,6 +2,8 @@ import datetime
 
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.response import Response
+import django_filters.rest_framework
+
 
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
@@ -29,7 +31,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
+    filter_backends = (filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('user__username',)
     ordering_fields = ('user__last_name',)
     filter_fields = ('artist',
@@ -48,7 +50,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
+    filter_backends = (filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('artist__user__username',)
     filter_fields = ('application_completed',
                      'application_complete',
