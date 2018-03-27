@@ -22,4 +22,4 @@ elasticsearch==2.3.0
 elasticstack==0.1.1
 django-polymorphic==2.0.2
 django-categories==1.5.4
-django-pagedown==0.1.0
+django-pagedown==1.0.4
