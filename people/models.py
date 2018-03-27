@@ -17,7 +17,7 @@ class FresnoyProfile(models.Model):
         ('O', 'Other'),
     )
 
-    user = models.OneToOneField(User, related_name='profile')
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
@@ -52,7 +52,7 @@ class Artist(models.Model):
     class Meta:
         ordering = ['user__last_name']
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=255, blank=True)
     bio_short_fr = models.TextField(blank=True)
     bio_short_en = models.TextField(blank=True)
@@ -73,7 +73,7 @@ class Staff(models.Model):
     """
     Someone working at Le Fresnoy (insider) or for a production
     """
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     updated_on = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
