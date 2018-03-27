@@ -1,5 +1,5 @@
 # from django.conf.urls import include, url
-from django.urls import include, path
+from django.urls import include, path, re_path
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -87,10 +87,10 @@ v2_api.register(r'assets/gallery', GalleryViewSet)
 v2_api.register(r'assets/medium', MediumViewSet)
 
 
-urlpatterns = ['',
+urlpatterns = [
                        path('v2/', include(v2_api.urls)),
                        path('v2/auth/', obtain_jwt_token),
-                       path('account/activate/%s/$' % (settings.PASSWORD_TOKEN),
+                       re_path('account/activate/%s/$' % settings.PASSWORD_TOKEN,
                             people_views.activate, name='user-activate'),
                        # django user registration
                        path('v2/rest-auth/', include('rest_auth.urls')),
