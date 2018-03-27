@@ -1,11 +1,11 @@
-from uuidfield import UUIDField
+# from uuidfield import UUIDField
 
 from django.db import models
 
 
 class BTBeacon(models.Model):
     label = models.CharField(max_length=255)
-    uuid = UUIDField(unique=True)
+    uuid = models.UUIDField(unique=True)
     rssi_in = models.IntegerField()
     rssi_out = models.IntegerField()
     x = models.FloatField()

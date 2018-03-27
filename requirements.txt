@@ -14,7 +14,7 @@ django-filter==1.0.1
 django-guardian==1.4.6
 django-model-utils==2.2
 # django-markdownx==2.0.22
-django-uuidfield==0.5
+# django-uuidfield==0.5
 django-sortedm2m==0.10.0
 django-haystack==2.4.1
 drf-haystack==1.5.6
