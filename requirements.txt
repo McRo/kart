@@ -2,7 +2,7 @@ Django==2.0.2
 Pillow==5.0.0
 django-cors-headers==1.1.0
 django-countries==5.1.1
-django-extensions==1.5.5
+django-extensions==2.0.6
 django-grappelli==2.11.1
 -e git+https://github.com/django-tastypie/django-tastypie#egg=django-tastypie
 djangorestframework==3.7.7
