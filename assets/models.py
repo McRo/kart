@@ -33,7 +33,7 @@ class Medium(models.Model):
     medium_url = models.URLField(null=True, blank=True)
     file = models.FileField(upload_to=make_filepath, null=True, blank=True)
 
-    gallery = models.ForeignKey(Gallery, related_name='media')
+    gallery = models.ForeignKey(Gallery, related_name='media', on_delete=models.PROTECT)
 
     def __unicode__(self):
         return "{0} - {1}".format(self.label, self.description)

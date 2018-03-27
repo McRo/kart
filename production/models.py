@@ -31,15 +31,15 @@ class OrganizationTask(Task):
 
 
 class ProductionStaffTask(models.Model):
-    staff = models.ForeignKey(Staff)
-    production = models.ForeignKey('Production', related_name="staff_tasks")
-    task = models.ForeignKey(StaffTask)
+    staff = models.ForeignKey(Staff, on_delete=models.PROTECT)
+    production = models.ForeignKey('Production', related_name="staff_tasks", on_delete=models.PROTECT)
+    task = models.ForeignKey(StaffTask, on_delete=models.PROTECT)
 
 
 class ProductionOrganizationTask(models.Model):
-    organization = models.ForeignKey(Organization)
-    production = models.ForeignKey('Production', related_name="organization_tasks")
-    task = models.ForeignKey(OrganizationTask)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+    production = models.ForeignKey('Production', related_name="organization_tasks", on_delete=models.PROTECT)
+    task = models.ForeignKey(OrganizationTask, on_delete=models.PROTECT)
 
 
 class Production(PolymorphicModel):
@@ -178,7 +178,7 @@ class Event(Production):
     starting_date = models.DateTimeField()
     ending_date = models.DateTimeField()
 
-    place = models.ForeignKey(Place)
+    place = models.ForeignKey(Place, on_delete=models.PROTECT)
 
     # artwork types
     installations = models.ManyToManyField(Installation, blank=True, related_name='events')
@@ -202,7 +202,7 @@ class Itinerary(models.Model):
     label_en = models.CharField(max_length=255)
     description_fr = models.TextField()
     description_en = models.TextField()
-    event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'}, related_name='itineraries')
+    event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'}, related_name='itineraries', on_delete=models.PROTECT)
     artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
     gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
 
@@ -215,6 +215,6 @@ class ItineraryArtwork(models.Model):
         ordering = ('order',)
         unique_together = (('itinerary', 'artwork'), ('itinerary', 'order'))
 
-    itinerary = models.ForeignKey(Itinerary)
-    artwork = models.ForeignKey(Artwork)
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.PROTECT)
+    artwork = models.ForeignKey(Artwork, on_delete=models.PROTECT)
     order = models.PositiveIntegerField()

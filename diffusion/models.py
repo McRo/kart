@@ -10,7 +10,7 @@ class Place(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
 
-    organization = models.ForeignKey(Organization, related_name='places')
+    organization = models.ForeignKey(Organization, related_name='places', on_delete=models.PROTECT)
 
     def __unicode__(self):
         return '{0} ({1})'.format(self.name, self.organization)
