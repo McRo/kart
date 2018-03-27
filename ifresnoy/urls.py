@@ -107,7 +107,7 @@ urlpatterns = ['',
                        #     include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
                        #     kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
                        #             "namespace": "ifresnoy_tastypie_swagger"}),
-                       path('admin/', include(admin.site.urls)),
-                       static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
-                       static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-             ]
+                       path('admin/', admin.site.urls),
+             ] \
+             + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+             + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
