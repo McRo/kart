@@ -1,9 +1,9 @@
 language: python
 python:
-  - "2.7"
+  - "3.6.4"
 install:
-  - pip install tox==2.4.1
-  - pip install tox-travis==0.6
+  - pip install tox==2.9.1
+  - pip install tox-travis==0.10
 script:
   - cp ifresnoy/site_settings.py.dev ifresnoy/site_settings.py
   - tox
