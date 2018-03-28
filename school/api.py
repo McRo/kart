@@ -80,5 +80,4 @@ class StudentApplicationResource(ModelResource):
         ordering = ['created_on']
 
     artist = fields.ForeignKey(ArtistResource, 'artist')
-    administrative_galleries = fields.ToManyField(GalleryResource, 'administrative_galleries', full=True)
-    artwork_galleries = fields.ToManyField(GalleryResource, 'artwork_galleries', full=True)
+    # cursus_justifications = fields.ToManyField(GalleryResource, 'cursus_justifications', full=False, null=True,)

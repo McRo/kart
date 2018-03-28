@@ -27,7 +27,6 @@ class PrivateStringField(serializers.Field):
 class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
-        # exclude = ('user',)
         fields = (
             "id",
             "photo",
@@ -133,3 +132,10 @@ class StaffSerializer(serializers.HyperlinkedModelSerializer):
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Organization
+        fields = (
+            'id',
+            'url',
+            'name',
+            'description',
+            'picture',
+        )

@@ -12,7 +12,7 @@ from people.serializers import StaffSerializer
 class OrganizationTaskSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = OrganizationTask
-
+        fields = ('url', 'label', 'description')
 
 class StaffTaskSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
