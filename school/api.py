@@ -11,8 +11,6 @@ from tastypie.utils import trailing_slash
 from people.api import ArtistResource
 from .models import Promotion, Student, StudentApplication
 
-from assets.api import GalleryResource
-
 
 class PromotionResource(ModelResource):
     class Meta:

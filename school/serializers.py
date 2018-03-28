@@ -10,10 +10,12 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
         model = Student
         fields = '__all__'
 
+
 class PromotionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Promotion
         fields = '__all__'
+
 
 class StudentAutocompleteSerializer(HaystackSerializer):
     class Meta:

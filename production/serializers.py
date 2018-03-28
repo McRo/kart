@@ -14,6 +14,7 @@ class OrganizationTaskSerializer(serializers.HyperlinkedModelSerializer):
         model = OrganizationTask
         fields = ('url', 'label', 'description')
 
+
 class StaffTaskSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = StaffTask
