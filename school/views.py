@@ -70,7 +70,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         otherwise Staff get all Users applications
         """
         user = self.request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return StudentApplication.objects.none()
         if user.is_staff:
             # or not user.is_authenticated() WHY ???
