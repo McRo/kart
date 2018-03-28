@@ -8,3 +8,4 @@ ifresnoy/site_settings.py
 .coverage
 .tox
 .pytest_cache/
+static/
