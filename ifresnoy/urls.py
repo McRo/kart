@@ -1,4 +1,3 @@
-# from django.conf.urls import include, url
 from django.urls import include, path, re_path
 
 from django.conf import settings
@@ -16,7 +15,7 @@ from production.api import (
     ItineraryResource, ArtworkResource, StaffTaskResource
 )
 from diffusion.api import PlaceResource
-from school.api import PromotionResource, StudentResource, StudentApplicationResource
+from school.api import PromotionResource, StudentResource
 
 from people.views import (
     ArtistViewSet, UserViewSet, FresnoyProfileViewSet,
@@ -91,13 +90,13 @@ urlpatterns = [
                        path('v2/', include(v2_api.urls)),
                        path('v2/auth/', obtain_jwt_token),
                        re_path('account/activate/%s/$' % settings.PASSWORD_TOKEN,
-                            people_views.activate, name='user-activate'),
+                               people_views.activate, name='user-activate'),
                        # django user registration
                        path('v2/rest-auth/', include('rest_auth.urls')),
                        path('v2/rest-auth/registration/', include('rest_auth.registration.urls')),
                        # vimeo
                        path('v2/assets/vimeo/upload/token',
-                           assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
+                            assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
 
                        # api v1
                        path('', include(v1_api.urls)),
