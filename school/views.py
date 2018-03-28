@@ -73,7 +73,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return StudentApplication.objects.none()
         if user.is_staff:
-            # or not user.is_authenticated() WHY ???
+            # or not user.is_authenticated WHY ???
             return StudentApplication.objects.all()
         else:
             # get or create an application

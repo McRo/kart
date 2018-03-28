@@ -12,14 +12,14 @@ class PrivateStringField(serializers.Field):
         return obj
 
     def get_attribute(self, instance):
-        if self.context['request'].user.is_authenticated():
+        if self.context['request'].user.is_authenticated:
             return super(PrivateStringField, self).get_attribute(instance)
         return None
 
     def to_internal_value(self, data):
         # for write functionality
         # check if data is valid and if not raise ValidationError
-        if self.context['request'].user.is_authenticated():
+        if self.context['request'].user.is_authenticated:
             return data
         return ""
 
