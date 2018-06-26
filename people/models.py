@@ -65,7 +65,7 @@ class Artist(models.Model):
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} ({1})'.format(self.user, self.nickname)
 
 
@@ -76,7 +76,7 @@ class Staff(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     updated_on = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.username
 
 
@@ -89,5 +89,5 @@ class Organization(models.Model):
     picture = models.ImageField(upload_to=make_filepath, blank=True)
     updated_on = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

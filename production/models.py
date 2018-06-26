@@ -18,7 +18,7 @@ class Task(models.Model):
     label = models.CharField(max_length=255)
     description = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 
@@ -64,7 +64,7 @@ class Production(PolymorphicModel):
     description_fr = models.TextField(blank=True, null=True)
     description_en = models.TextField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} ({1})'.format(self.title, self.id)
 
 
@@ -94,7 +94,7 @@ class Artwork(Production):
 class FilmGenre(models.Model):
     label = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 
@@ -150,7 +150,7 @@ class Film(Artwork):
 class InstallationGenre(models.Model):
     label = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 
@@ -207,7 +207,7 @@ class Itinerary(models.Model):
     artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
     gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label_fr
 
 
