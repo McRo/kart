@@ -82,12 +82,7 @@ class Command(BaseCommand):
                 list_delete.extend(a)
         # Expired candidat/ure : delete all ()
         for sa in sa_expired:
-            # set short list
-            a = []
-            # add critical infos
-            a.extend(self.list_user(sa))
-            if(a):
-                list_delete.extend(a)
+            list_delete.extend([(sa, "all", sa)])
         #
         for infos in list_delete:
             model, field, value = infos
@@ -190,12 +185,18 @@ class Command(BaseCommand):
         elif value.__class__.__name__ in ('str'):
             # print("delete str")
             setattr(model, field, "")
+        elif value.__class__.__name__ in ('StudentApplication'):
+            artist = value.artist
+            # delete sa, artist, user
+            value.delete()
+            artist.delete()
+            return
         elif value.__class__.__name__ in ('User'):
             value.delete()
             return
         else:
-            # other model like Date
-            # print("delete simple model")
-            delattr(model, field)
+            # other model
+            # delattr(model, field)
+            model.__setattr__(field, None)
             # return model.save()
         model.save()
