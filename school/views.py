@@ -155,7 +155,11 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 request.data.get('application_complete') or
                 request.data.get('selected_for_interview') or
                 request.data.get('selected') or
+                request.data.get('unselected') or
                 request.data.get('wait_listed') or
+                request.data.get('wait_listed_for_interview') or
+                request.data.get('position_in_waitlist') or
+                request.data.get('position_in_interview_waitlist') or
                 request.data.get('application_complete') or
                 request.data.get('campaign'))
         ):
