@@ -67,11 +67,13 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'application_completed',
                   'application_complete',
                   'wait_listed_for_interview',
+                  'position_in_interview_waitlist',
                   'selected_for_interview',
                   'interview_date',
                   'selected',
                   'unselected',
                   'wait_listed',
+                  'position_in_waitlist',
                   'observation',
                   'created_on',
                   'updated_on',)

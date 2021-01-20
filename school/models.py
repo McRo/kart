@@ -258,6 +258,11 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Administration - Is the candidat wait listed for the Interview"
     )
+    position_in_interview_waitlist = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        help_text="Administration - Set the position in interview waitlist"
+    )
     selected = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat selected"
@@ -269,6 +274,11 @@ class StudentApplication(models.Model):
     wait_listed = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat wait listed"
+    )
+    position_in_waitlist = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        help_text="Administration - Set the position in waitlist"
     )
     application_complete = models.BooleanField(
         default=False,

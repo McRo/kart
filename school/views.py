@@ -70,7 +70,9 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                         'wait_listed',)
     ordering_fields = ('id',
                        'artist__user__last_name',
-                       'artist__user__profile__nationality',)
+                       'artist__user__profile__nationality',
+                       'position_in_interview_waitlist',
+                       'position_in_waitlist',)
 
     def get_serializer_class(self, *args, **kwargs):
         """
