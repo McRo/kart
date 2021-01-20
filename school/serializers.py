@@ -42,6 +42,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'artist',
                   'current_year_application_count',
                   'identity_card',
+                  'INE',
                   'first_time',
                   'last_applications_years',
                   'remote_interview',

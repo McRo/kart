@@ -110,6 +110,12 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Identity justificative"
     )
+    INE = models.CharField(
+        max_length=11,
+        null=True,
+        blank=True,
+        help_text="Identifiant National Etudiant (only French student) - 10 numbers + 1 letter ou 9 numbers + 2 letters"
+    )
     # First Candidature
     first_time = models.BooleanField(
         default=False,
