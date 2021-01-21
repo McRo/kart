@@ -15,7 +15,9 @@ from people.models import Artist
 from school.utils import (send_candidature_completed_email_to_user,
                           send_candidature_completed_email_to_admin,
                           send_candidature_complete_email_to_candidat,
-                          send_interview_selection_email_to_candidat)
+                          send_interview_selection_email_to_candidat,
+                          send_not_selected_email_to_candidat,
+                          )
 
 
 class SendSendEmail(TestCase):
@@ -84,4 +86,13 @@ class SendSendEmail(TestCase):
         """
         request = RequestFactory().request(url=self.studentapplication_detail_url, methods="PATCH")
         mail_sent = send_interview_selection_email_to_candidat(request, self.user, self.application)
+        self.assertEqual(mail_sent, True)
+
+    def test_send_not_selected_email_to_candidat(self):
+        """
+        Test send an not selected to user
+        """
+        request = RequestFactory().request(url=self.studentapplication_detail_url, methods="PATCH")
+        mail_sent = send_not_selected_email_to_candidat(request, self.user, self.application)
+        print(mail_sent)
         self.assertEqual(mail_sent, True)
