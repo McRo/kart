@@ -1,10 +1,9 @@
-<html>
-    <head>
-      <title>Le Fresnoy - Account Activation</title>
-    </head>
-    <body style="color: black; background-color: #31bdf0;" bgcolor="#31bdf0">
-      <div class="page" style="max-width: 960px; width: 80%; background-color: white; margin: 5% 5%; padding: 5% 5%;">
-        <img style="width:100%" src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png">
+{% extends "base-candidature-email.html" %}
+
+{% block title %} Le Fresnoy - Account Activation {% endblock %}
+
+{% block content %}
+
         <p>Bonjour,</p>
 
         <p>Vous êtes sur le point de créer un compte sur notre base de données, veuillez
@@ -38,6 +37,5 @@
         <p>
         The team at Le Fresnoy
         </p>
-    </div>
-  <body>
-</html>
+
+{% endblock %}
