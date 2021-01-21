@@ -18,6 +18,7 @@ from .utils import (send_candidature_completed_email_to_user,
                     send_candidature_completed_email_to_admin,
                     send_candidature_complete_email_to_candidat,
                     send_interview_selection_email_to_candidat,
+                    send_not_selected_email_to_candidat,
                     candidature_close,
                     )
 
@@ -183,6 +184,12 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             application = self.get_object()
             candidat = application.artist.user
             send_interview_selection_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when is not selected
+        if(request.data.get('unselected')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_not_selected_email_to_candidat(request, candidat, application)
 
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)

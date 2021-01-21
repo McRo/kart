@@ -160,6 +160,53 @@ def send_interview_selection_email_to_candidat(request, candidat, application):
     return mail_sent
 
 
+
+def send_is_on_waitlist_for_interview_to_candidat(request, candidat, application):
+    # Send email : PRESELECTION : ON WAITLIST
+    msg_plain = render_to_string(
+        'emails/send_on_waitlist_for_interview_to_candidat.txt',
+        {
+            'application': application
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_on_waitlist_for_interview_to_candidat.html',
+        {
+            'application': application
+        }
+    )
+    mail_sent = send_mail('Le Fresnoy présélection / preselection',
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
+def send_not_selected_email_to_candidat(request, candidat, application):
+    # Send email : NOT SELECTED
+    msg_plain = render_to_string(
+        'emails/send_not_selected_email_to_candidat.txt',
+        {
+            'application': application
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_not_selected_email_to_candidat.html',
+        {
+            'application': application
+        }
+    )
+    mail_sent = send_mail('Non sélectionné / Not selected',
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
 def candidature_close(campaign=None):
     """
     Test if a candidature is closed
