@@ -1,0 +1,19 @@
+
+
+
+Bonjour  {{ application.artist }},
+
+Vous avez candidaté au concours {{ application.campaign.promotion.starting_year }} du Fresnoy – Studio national et nous vous remercions de votre intérêt pour notre école.
+
+Malgré la qualité des éléments transmis dans votre dossier d’inscription, nous sommes au regret de vous annoncer que votre candidature n’a pas été retenue.
+
+Les décisions du jury ne sont pas motivées.
+
+Nous vous invitons à candidater à nouveau l’année prochaine si vous remplissez les conditions d’accès.
+
+Les actualités de l’école sont à suivre sur le site et les réseaux sociaux de l’institution
+
+
+
+
+== English version below ==

@@ -1,10 +1,10 @@
-<html>
-    <head>
-      <title>Candidature - Interview's date</title>
-    </head>
-    <body style="color: black; background-color: #31bdf0;" bgcolor="#31bdf0">
-      <div class="page" style="max-width: 960px; width: 80%; background-color: white; margin: 5% 5%; padding: 5% 5%;">
-        <img style="width:100%" src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png">
+{% extends "base-candidature-email.html" %}
+
+{% block title %}
+Selection - Interview's date
+{% endblock %}
+
+{% block content %}
         <p>Bonjour {{user.first_name}} {{user.last_name}},</p>
         <p>Nous avons le plaisir de vous annoncer que votre candidature au concours d’entrée du Fresnoy a retenu
           l’attention de notre jury de présélection.</p>
@@ -121,11 +121,4 @@
               Tél. 33 (0)3 20 28 38 00 –
               <a href='https://www.lefresnoy.net/'>lefresnoy.net</a>
             </p>
-
-
-
-        </div>
-
-
-</body>
-</html>
+{% endblock %}

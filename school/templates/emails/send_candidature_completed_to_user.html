@@ -1,11 +1,10 @@
-<html>
-    <head>
-      <title>Kart - Candidature completed</title>
-    </head>
-    <body style="color: black; background-color: #31bdf0;" bgcolor="#31bdf0">
-      <div class="page" style="max-width: 960px; width: 80%; background-color: white; margin: 5% 5%; padding: 5% 5%;">
-        <img style="width:100%" src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png">
+{% extends "base-candidature-email.html" %}
 
+{% block title %}
+Selection - Candidature completed
+{% endblock %}
+
+{% block content %}
         <p>Bonjour,</p>
         <p>Vous avez finalisé votre candidature (numéro {{application.current_year_application_count}}), nous allons
           procéder à sa vérification et vous adresser une confirmation prochainement par e-mail. </p>
@@ -21,6 +20,6 @@
           receive a confirmation message soon by e-mail, once we have checked it. </p>
         <p>Kind regards,</p>
         <p>The team of Le Fresnoy - Studio national</p>
-</div>
-</body>
-</html>
+
+
+{% endblock %}
