@@ -6,15 +6,14 @@ Vous avez candidaté au concours {{ application.campaign.promotion.starting_year
 
 Vous faites partie des candidat.es actuellement sur liste d’attente pour l’entretien.
 
-En cas de désistement d’une personne présélectionnée, nous vous recontacterons afin de vous informer des modalités de l’entretien avec le Grand Jury. Ces rencontres auront lieu entre le lundi 28 juin et le vendredi 2 juillet 2021.
+En cas de désistement d’une personne présélectionnée, nous vous recontacterons afin de vous informer des modalités de l’entretien avec le Grand Jury.
+Ces rencontres auront lieu {{ interviews_dates.fr }}.
 
 N’hésitez pas à nous contacter pour toute information complémentaire (selection@lefresnoy.net).
 
 Salutations cordiales,
 
 L’équipe du Fresnoy – Studio national
-
-
 
 
 == English version below ==

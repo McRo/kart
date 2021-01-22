@@ -1,0 +1,28 @@
+{% extends "base-candidature-email.html" %}
+
+{% block title %}
+Selection - Candidature non finalisée
+{% endblock %}
+
+{% block content %}
+
+        <p>Bonjour ,</p>
+
+        <p>Vous avez commencé à compléter votre dossier de candidature sur la plateforme d’inscription du Fresnoy – Studio national.  </p>
+
+        <p>Votre dossier n’est pas encore finalisé, nous vous invitons à compléter les éléments manquants, [dès que possible].
+          Nous vous rappelons que la date limite de d'inscription est le {{ application_end.fr }} (heure de Paris). </p>
+
+        <p>Salutations cordiales, <p>
+
+        <p>L'équipe du Fresnoy - Studio national</p>
+
+
+        <hr/>
+        <p style="text-align:center;">English version below</p>
+        <hr/>
+
+
+         {{ application_end.en }}
+
+{% endblock %}

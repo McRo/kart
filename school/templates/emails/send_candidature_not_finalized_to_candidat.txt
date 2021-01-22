@@ -1,0 +1,16 @@
+Bonjour ,
+
+Vous avez commencé à compléter votre dossier de candidature sur la plateforme d’inscription du Fresnoy – Studio national.
+
+Votre dossier n’est pas encore finalisé, nous vous invitons à compléter les éléments manquants, [dès que possible].
+  Nous vous rappelons que la date limite de d'inscription est le {{ application_end.fr }} (heure de Paris).
+
+Salutations cordiales,
+
+L'équipe du Fresnoy - Studio national
+
+
+== English version below ==
+
+
+{{ application_end.en }}
