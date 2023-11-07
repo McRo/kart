@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-
+from django.utils.translation import gettext_lazy as _
 
 from django_countries.fields import CountryField
 from languages.fields import LanguageField
@@ -85,11 +85,13 @@ class Artist(models.Model):
     websites = models.ManyToManyField(Website, blank=True)
 
     def clean(self):
+        print(self)
+        print(self.collective.exists())
         # Don't allow null user and collective
-        if self.user is None and self.collective is None:
+        if self.user is None and not self.collective.exists():
             raise ValidationError(_("No User or Collective are set"))
         # Don't allow null collective without nickname
-        if self.collective is not None and self.collective.nickname is None:
+        if self.collective.exists() and self.self.nickname is None:
             raise ValidationError(_("Collective MUST have a nickname"))
 
     def __str__(self):
@@ -100,6 +102,7 @@ class Artist(models.Model):
             return '{}'.format(self.nickname)
         elif(self.user):
             return "{} {}".format(self.user.first_name, self.user.last_name)
+        return "???"
 
 
 class Staff(models.Model):
