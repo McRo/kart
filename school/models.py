@@ -79,10 +79,11 @@ class PhdStudent(models.Model):
     """
     student = models.OneToOneField(Student, related_name='phd_student', on_delete=models.PROTECT)
     university = models.ForeignKey(Organization, related_name='phd_student', on_delete=models.PROTECT, blank=True)
-    director = models.ForeignKey(User, related_name='phd_student', on_delete=models.PROTECT, blank=True)
+    directors = models.ManyToManyField(User, related_name='phd_student', blank=True)
     thesis_object = models.CharField(max_length=150, null=True, blank=True)
     thesis_file = models.FileField(upload_to=make_filepath, null=True, blank=True, help_text="thesis pdf file")
-
+    defense_date = models.DateField(null=True, blank=False, help_text="Year is important")
+    
     def __str__(self):
         return '{0}'.format(self.student)
 

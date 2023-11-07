@@ -10,7 +10,7 @@ from .models import (Promotion, Student, StudentApplication, StudentApplicationS
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('artist', 'number', 'promotion', 'graduate')
-    search_fields = ('number', 'user__first_name', 'user__last_name')
+    search_fields = ('number', 'user__first_name', 'user__last_name', 'artist__nickname')
 
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
@@ -51,10 +51,14 @@ class TeachingArtistAdmin(admin.ModelAdmin):
     filter_vertical = ("artworks_supervision",)
 
 
+@admin.register(PhdStudent)
+class TeachingArtistAdmin(admin.ModelAdmin):
+    # filter_vertical = ("director",)
+    pass
+
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin)
 admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(PhdStudent)
 admin.site.register(ScienceStudent)
 admin.site.register(VisitingStudent)
