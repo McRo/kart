@@ -12,21 +12,30 @@ class ArtistAdmin(admin.ModelAdmin):
     """ Admin model for Artist.
     """
     list_display = ('nick',)
-    search_fields = ['user__first_name', 'user__last_name']
-    filter_horizontal = ('websites',)
+    search_fields = ['user__first_name', 'user__last_name', 'nickname']
+    filter_horizontal = ('websites', 'collective')
 
     def nick(self, obj):
-        return ("{} ({} {})".format(obj.nickname,
-                                    obj.user.first_name,
-                                    obj.user.last_name) if obj.nickname
-                else "{} {}".format(obj.user.first_name, obj.user.last_name))
+        if(obj.user):
+            return ("{} ({} {})".format(obj.nickname,
+                                        obj.user.first_name,
+                                        obj.user.last_name) if obj.nickname
+                    else "{} {}".format(obj.user.first_name, obj.user.last_name))
+        else:
+            return obj.nickname
     nick.short_description = 'Nick name (real name) or real name'
 
-    def firstname(self, obj):
-        return obj.user.first_name
+    def get_firstname(self, obj):
+        if(obj.user):
+            return obj.user.first_name
+        if(obj.collective):
+            return obj.collective.all().values_list('user__first_name', flat=True)
 
     def lastname(self, obj):
-        return obj.user.last_name
+        if(obj.user):
+            return obj.user.last_name
+        if(obj.collective):
+            return obj.collective.all().values_list('collective__user__last_name', flat=True)
 
 
 class FresnoyProfileInline(admin.StackedInline):

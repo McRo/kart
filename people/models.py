@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
 
@@ -65,10 +66,13 @@ class FresnoyProfile(models.Model):
 
 class Artist(models.Model):
     class Meta:
-        ordering = ['user__last_name']
+        ordering = ['user__last_name', 'nickname']
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True,)
+    collective = models.ManyToManyField('self', blank=True, help_text="collective artists, pairs, ...")
     nickname = models.CharField(max_length=255, blank=True)
+    alphabetical_order = models.TextField(blank=True,
+        help_text="Never displayed, discern first/last/nick name")
     bio_short_fr = models.TextField(blank=True)
     bio_short_en = models.TextField(blank=True)
     bio_fr = models.TextField(blank=True)
@@ -80,9 +84,22 @@ class Artist(models.Model):
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
 
+    def clean(self):
+        # Don't allow null user and collective
+        if self.user is None and self.collective is None:
+            raise ValidationError(_("No User or Collective are set"))
+        # Don't allow null collective without nickname
+        if self.collective is not None and self.collective.nickname is None:
+            raise ValidationError(_("Collective MUST have a nickname"))
+
     def __str__(self):
-        return '{}'.format(self.nickname) if self.nickname else "{} {}".format(self.user.first_name,
-                                                                               self.user.last_name)
+        if(self.nickname):
+            if(self.user):
+                return '{} ({} {})'.format(self.nickname, self.user.first_name, self.user.last_name)
+            # collective    
+            return '{}'.format(self.nickname)
+        elif(self.user):
+            return "{} {}".format(self.user.first_name, self.user.last_name)
 
 
 class Staff(models.Model):
