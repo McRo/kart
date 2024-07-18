@@ -34,7 +34,7 @@ from production.models import Artwork, Event
 from people.models import Artist
 from diffusion.models import Award, MetaAward, Place
 
-from utils.promo_utils import getPromoByName
+# from utils.promo_utils import getPromoByName
 
 import logging
 # Logging
