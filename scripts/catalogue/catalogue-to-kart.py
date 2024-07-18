@@ -16,7 +16,7 @@ from utils.kart_tools import usernamize
 
 
 DRY_RUN = False
-FILE_PATH = "scripts/portraits/"
+stats = {}
 
 """
     USAGE : ./manage.py runscript scripts.catalogue.catalogue-to-kart
@@ -48,6 +48,7 @@ def populateAPI(data):
                 created = False
             else:
                 print("ARTIST CREATOR ERROR !!! ")
+                print("il n'existe pas alors que normalement il doit être dans la base")
                 return
 
     artist = artist_search["artist"]
@@ -200,8 +201,10 @@ def populateAPI(data):
     task_prod = OrganizationTask.objects.get(
         label__icontains='producteur')
 
-    ProductionOrganizationTask.objects.get_or_create(
+    po, created = ProductionOrganizationTask.objects.get_or_create(
         task=task_prod, organization=orga_fresnoy, production=artwork)
+    
+    setStats(po, created)
     
     set_partners(artwork, artwork_partners, artwork_partners_media)
     
@@ -230,6 +233,15 @@ def populateAPI(data):
 
 def replaceUrlMedia(str):
     return str.replace("app/static/", "https://catalogue-panorama.lefresnoy.net/static/")
+
+
+def setStats(value_from_model, created):
+    class_name = value_from_model.__class__.__name__.lower()
+    attibute = class_name + "_created" if created else class_name + "_reused"
+    if not attibute in stats:
+        stats[attibute] = []
+    stats[attibute].append(value_from_model)
+
 
 
 def get_or_create(model, attr):
@@ -337,6 +349,7 @@ def set_partners(artwork, partners_str, partners_media):
             organization = organizations[0]
             pot, created = ProductionOrganizationTask.objects.get_or_create(
                 task=partner_type, organization=organization, production=artwork)
+            setStats(pot, created)
             print(pot)
         # partner : organization 1, organization 2
         elif len(partner_types) == 1 and len(organizations) > 1:
@@ -344,6 +357,7 @@ def set_partners(artwork, partners_str, partners_media):
             for organization in organizations:
                 pot, created = ProductionOrganizationTask.objects.get_or_create(
                      task=partner_type, organization=organization, production=artwork)
+                setStats(pot, created)
                 print(pot)
         # partner, coproduction  : organization
         elif len(partner_types) > 1 and len(organizations) == 1:
@@ -351,6 +365,7 @@ def set_partners(artwork, partners_str, partners_media):
             for partner_type in partner_types:
                 pot, created = ProductionOrganizationTask.objects.get_or_create(
                      task=partner_type, organization=organization, production=artwork)
+                setStats(pot, created)
                 print(pot)
 
 
@@ -386,6 +401,7 @@ def getOrCreateModelInstanceByStr(model, attr, txt_str):
 
     if not instance:
         instance, created = model.objects.get_or_create(**{attr:txt_str.title()})
+        setStats(instance, created)
         print("Création d'une instance" + str(model) + " : " + str(instance))
 
     return instance
@@ -463,15 +479,13 @@ def set_credits(aw, credits):
                 staff = user.staff_set.first()
             else:
                 staff, created = Staff.objects.get_or_create(user=user)
+                setStats(staff, created)                    
             staffs.append(staff)
 
         # search for task
         task_str = credit.split(":")[1]
         # sometimes Benjamin Griere : Graphisme 3D, Développeur 3D
-        tasks = []
-        for t in task_str.split(","):
-            task = get_or_create_stafftask(t)
-            tasks.append(task)
+        tasks = getOrCreateMultiInstancesByStr(StaffTask, 'label', task_str)
 
         # HAVE TO 
         # ONE user ONE task
@@ -488,18 +502,21 @@ def set_credits(aw, credits):
             staff = staffs[0]
             task = tasks[0]
             pst, created = ProductionStaffTask.objects.get_or_create(staff=staff, task=task, production=aw)
+            setStats(pst, created)
             print(pst)
 
         elif len(staffs) > 1 and len(tasks)==1:
             task = tasks[0]
             for staff in staffs:
                 pst, created = ProductionStaffTask.objects.get_or_create(staff=staff, task=task, production=aw)
+                setStats(pst, created)
                 print(pst)
 
         elif len(staffs) == 1 and len(tasks) > 1:
             staff = staffs[0]
             for task in tasks:
                 pst, created = ProductionStaffTask.objects.get_or_create(staff=staff, task=task, production=aw)
+                setStats(pst, created)
                 print(pst)
             
     # END OF FOR CREDITS
@@ -562,7 +579,14 @@ def get_or_create_user(user_str):
                         
     if not user:
         username = usernamize(first_name, last_name, False)
-        user, created = User.objects.get_or_create(first_name=first_name.title(), last_name=last_name.title(), username=username)
+        try:
+            user, created = User.objects.get_or_create(first_name=first_name.title(), last_name=last_name.title(), 
+                                                       username=username)
+        except Exception as e:
+            username = usernamize(first_name, last_name, True)
+            user, created = User.objects.get_or_create(first_name=first_name.title(), last_name=last_name.title(), 
+                                                       username=username)
+        setStats(user, created)
         print("CREATE User : " + str(user))
 
     return [user, created]
@@ -586,6 +610,7 @@ def get_or_create_stafftask(task_str):
         task = task_query.first()
     if not task:
         task, created = StaffTask.objects.get_or_create(label=task_str.title())
+        setStats(task, created)   
         print("Création TASK : " + str(task))
     
     print(task)
@@ -797,9 +822,11 @@ def getOrCreateProduction(artist, title, type):
     if(type.lower() == "performance"):
         production, created = get_or_create(Performance, 
                                             {'title':title, 'production_date':datetime.date(production_year, 1, 1)})
-
-    if(created and not DRY_RUN):
+        
+    if(created):
         production.authors.add(artist)
+    
+    setStats(production, created)
 
     return production
 
@@ -898,5 +925,8 @@ def run(*args):
             event_artworks = event.films if artwork.polymorphic_ctype.model == 'film' else event.installations
             event_artworks.add(artwork)
     
-    event.save()  
-       
+    for elt in stats:
+        print(elt + " : " + str(len(stats[elt])))
+
+
+    event.save()
