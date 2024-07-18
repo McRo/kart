@@ -1,4 +1,3 @@
-from doctest import script_from_examples
 from people.models import User, Artist, Staff
 from production.models import (Film, Installation, Performance, Event,
                                Organization, FilmGenre, InstallationGenre,
@@ -6,7 +5,6 @@ from production.models import (Film, Installation, Performance, Event,
 from slugify import slugify
 import markdownify
 import csv
-import sys
 import unidecode
 import datetime
 import pytz
@@ -28,17 +26,17 @@ FILE_PATH = "scripts/portraits/"
 
 """
 
-
-
-
 def populateAPI(data):
 
     global DRY_RUN
     
     # GET DB ARTIST
+    # get name
     artist_name = data['artist_nickname'] if data['artist_nickname'] else data['user_first_name'] + " " + data['user_last_name']    
+    # search
     artist_search = getArtistByNames(data['user_first_name'], data['user_last_name'], data['artist_nickname'])
     artist_search_list = getArtistByNames(data['user_first_name'], data['user_last_name'], data['artist_nickname'], True)
+    # doute ?
     if artist_search["dist"] < .9:
         ask = input("Est-ce la même personne ? (db) {}  <-> {} (csv)".format(artist_search["artist"], artist_name))
         if "n" in ask:
@@ -49,6 +47,7 @@ def populateAPI(data):
                 artist_search = select_with_result_list["artist"]
                 created = False
             else:
+                print("ARTIST CREATOR ERROR !!! ")
                 return
 
     artist = artist_search["artist"]
@@ -57,6 +56,7 @@ def populateAPI(data):
     print("  {} ".format(artist))
     print("*********")
 
+    # BIO
     bio_fr = select_french_text(data["artist_biography"], data["artist_biography_translated"])
     bio_en = select_english_text(data["artist_biography"], data["artist_biography_translated"])
 
