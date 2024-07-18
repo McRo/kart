@@ -876,13 +876,18 @@ def run(*args):
     # get the file
     fichier_csv = 'scripts/catalogue/catalogue.csv'  # 
 
-    event, created = Event.objects.get_or_create(title="Panorama " + str(datetime.datetime.now().year+2-2000), 
-                                        starting_date=datetime.datetime(datetime.datetime.now().year, 1, 1, 
+    input("Vérifiez que vous avez la dernière version du catalalogue à mettre dans : " + fichier_csv)
+
+    # create Panorama event
+    current_year = datetime.datetime.now().year
+    event, created = Event.objects.get_or_create(title="Panorama " + str(current_year+2-2000), 
+                                        starting_date=datetime.datetime(current_year, 1, 1, 
                                                                         tzinfo=pytz.timezone("Europe/Paris")),)
    
     
     with open(fichier_csv, 'r') as csvfile:
         lecteur_csv = csv.DictReader(csvfile, delimiter=',', quotechar='"' )
+        # TEST : avance dans le tableau
         # for i in range(10):
         #     row = next(lecteur_csv)
 
