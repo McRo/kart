@@ -8,6 +8,7 @@ import pathlib
 
 # # Shell Plus Django Imports (uncomment to use script in standalone mode, recomment before flake8)
 import django
+from django.db.models import Q
 # Add root to python path for standalone running
 sys.path.append(str(pathlib.Path(__file__).parent.parent.absolute()))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
@@ -99,7 +100,7 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
         firstname = unidecode.unidecode(firstname).lower()
     if pseudo:
         # pseudo_accent = pseudo
-        pseudo = unidecode.unidecode(pseudo).lower()
+        pseudo = unidecode.unidecode(pseudo).lower().strip()
     fullname = f"{firstname} {lastname}"
 
     # Cache
@@ -211,6 +212,36 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
                 # If no close firstname found, store with the sole dist_lastname (unlikely candidate)
                 art_l.append({"artist": artist_kart, 'dist': dist_lastname})
 
+    ###PSEUDO 
+    if pseudo:
+        guessArtNN = Artist.objects.annotate(
+            similarity_pseudo=TrigramSimilarity('nickname__unaccent__lower', pseudo),
+        ).filter(
+            similarity_pseudo__gt=0.3
+        ).order_by('-similarity_pseudo')
+
+        if guessArtNN:
+            for artist_kart in guessArtNN:
+                kart_nickname_accent = artist_kart.nickname
+                kart_nickname = unidecode.unidecode(kart_nickname_accent).lower().strip()
+
+                dist_full = dist2(kart_nickname, pseudo)
+
+                # In case of perfect match ...
+                if dist_full > .9:
+                    if kart_nickname == pseudo:
+                        # store the artist in potential matches with extreme probability (2)
+                        # and continue with next candidate
+                        art_l.append({"artist": artist_kart, 'dist': 2})
+                        continue
+                    else:
+                        art_l.append({"artist": artist_kart, 'dist': dist_full})
+                else:
+                    logger.warning(f"""Pseudo globally match {pseudo} but not in pseudo correspondences:
+                    Kart pseudo: {kart_nickname} : {pseudo}""")
+                    # art_l.append({"artist": artist_kart, 'dist': dist_full})
+                    
+    if art_l:
         # Take the highest distance score
         art_l.sort(key=lambda i: i['dist'], reverse=True)
 

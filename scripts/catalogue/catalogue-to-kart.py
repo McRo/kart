@@ -9,6 +9,7 @@ import csv
 import sys
 import unidecode
 import datetime
+import pytz
 from langdetect import detect
 
 from .utils.artist_utils import getArtistByNames
@@ -20,40 +21,13 @@ DRY_RUN = False
 FILE_PATH = "scripts/portraits/"
 
 """
-    USAGE : ./manage.py runscript catalogue-to-kart --script-args DRY_RUN 
+    USAGE : ./manage.py runscript scripts.catalogue.catalogue-to-kart
+    OU
+    ./manage.py runscript scripts.catalogue.catalogue-to-kart --script-args DRY_RUN 
+    -> DRY_RUN NE FONCTIONNE PAS
 
 """
 
-# 'email':'user_email',
-#     'first_name':'user_first_name',
-#     'last_name':'user_last_name',
-#     'type':'artist_type',
-#     'artist_name':'artist_nickname',
-#     'biography':'artist_biography',
-#     'biography_translated':'artist_biography_translated',
-#     'type':'artwork_type',
-#     'title':'artwork_title',
-#     'subtitle':'artwork_subtitle',
-#     'description':'artwork_description',
-#     'description_translated':'artwork_description_translated',
-#     'duration':'artwork_duration',
-#     'shooting_format':'artwork_shooting_format',
-#     'aspect_ratio':'artwork_aspect_ratio',
-#     'process':'artwork_process',
-#     'genres':'artwork_genres',
-#     'languages_vo':'artwork_languages_vo',
-#     'languages_subtitles':'artwork_languages_subtitles',
-#     'technical_description':'artwork_technical_description',
-#     'thanks':'artwork_thanks',
-#     'partners':'artwork_partners',
-#     'partners_description':'artwork_partners_description',
-#     'credits':'artwork_credits',
-#     'credits_description':'artwork_credits_description',
-#     'keywords':'artwork_keywords',
-#     'shooting_places':'artwork_shooting_places',
-#     'images':'artwork_images',
-#     'images_screen':'artwork_images_screen',
-#     'logos':'artwork_logos',
 
 
 
@@ -64,18 +38,30 @@ def populateAPI(data):
     # GET DB ARTIST
     artist_name = data['artist_nickname'] if data['artist_nickname'] else data['user_first_name'] + " " + data['user_last_name']    
     artist_search = getArtistByNames(data['user_first_name'], data['user_last_name'], data['artist_nickname'])
+    artist_search_list = getArtistByNames(data['user_first_name'], data['user_last_name'], data['artist_nickname'], True)
     if artist_search["dist"] < .9:
         ask = input("Est-ce la même personne ? (db) {}  <-> {} (csv)".format(artist_search["artist"], artist_name))
         if "n" in ask:
-           print("Artiste non trouvé")
-           return
+            print("Artiste non trouvé")
+            print("Et dans cette liste ? ")
+            select_with_result_list = input_choices(artist_search_list)
+            if select_with_result_list:
+                artist_search = select_with_result_list["artist"]
+                created = False
+            else:
+                return
 
     artist = artist_search["artist"]
+
+    print("START WITH ARTIST")
+    print("  {} ".format(artist))
+    print("*********")
 
     bio_fr = select_french_text(data["artist_biography"], data["artist_biography_translated"])
     bio_en = select_english_text(data["artist_biography"], data["artist_biography_translated"])
 
     artwork_type = data["artwork_type"]
+    
     artwork_title =  data["artwork_title"]
     artwork_subtitle = data["artwork_subtitle"]
     artwork_text_fr = select_french_text(data["artwork_description"], data["artwork_description_translated"])
@@ -89,24 +75,35 @@ def populateAPI(data):
     shooting_places = data["artwork_shooting_places"]
     # install
     artwork_technical_description = data["artwork_technical_description"]
-    # credits
+    # thanks
     artwork_thanks = data["artwork_thanks"]
+    # partners
+    artwork_partners = data["artwork_partners"]
     partners_description = data["artwork_partners_description"]
+    # credits
     artwork_credits = data["artwork_credits"]
     artwork_credits_description = data["artwork_credits_description"]
+    if artwork_credits == "" and "\n" in artwork_credits_description and ':' in artwork_credits_description:
+        artwork_credits = artwork_credits_description
     # keywords
     keywords = data["artwork_keywords"]
     genres = data["artwork_genres"]
     # images
     images = data["artwork_images_screen"] if data["artwork_images_screen"] != "" else data["artwork_images"]
+
+    images = replaceUrlMedia(images)
     images = images.split("|")
     
     artwork_avatar = images.pop()
     artwork_medias = images
-    artwork_partners_media = data["artwork_logos"].split("|")
+    artwork_partners_media = replaceUrlMedia(data["artwork_logos"]).split("|") if data["artwork_logos"] else []
 
     # artist
     artist_db = artist
+
+    print("ARTWORK")
+    print("  {} - {}".format(artwork_title, artwork_type))
+    print("*********")
 
     artwork = None
     if(artist_db):
@@ -131,9 +128,8 @@ def populateAPI(data):
 
     # duration
     if(artwork_duration):
-        # 00/01/1900 00:20
         # 20:00
-        duration = artwork_duration.split(" ")[0].split(":")
+        duration = artwork_duration.split(":")
         artwork.duration = datetime.timedelta(
             # hours=int(duration[0]), minutes=int(duration[1]))
             minutes=int(duration[0]), seconds=int(duration[1]))
@@ -166,26 +162,29 @@ def populateAPI(data):
             place = getPlace(str_place)
             if(place):
                 artwork.shooting_place.add(place)
-    # format
+    # shooting format ->  keep first()
     if(artwork_type.lower() == 'film' and artwork_shooting_format):
-        artwork.shooting_format = artwork_shooting_format
+        artwork.shooting_format = artwork_shooting_format.split(',')[0]
     # aspect_ratio
     if(artwork_type.lower() == 'film' and artwork_shooting_format):
-        artwork.aspect_ratio = artwork_aspect_ratio
+        artwork.aspect_ratio = artwork_aspect_ratio.split(',')[0]
 
      # process
     if(artwork_type.lower() == 'film' and artwork_process):
-        artwork.process = artwork_process
+        artwork.process = artwork_process.split(',')[0]
+
+
+    if artwork_type.lower() == 'installation':
+        artwork.technical_description = artwork_technical_description
 
     # avatar
-    if( artwork_avatar == ""):
+    if( artwork_avatar == "" and artwork_medias):
         artwork_avatar = artwork_medias.pop(0)
 
     if(artwork_avatar and not artwork.picture):
         avatar_name = artwork_avatar.split('/')[-1]
         avatar_file = createFileFromUrl(artwork_avatar)
-        artwork.picture.save(avatar_name[:35], avatar_file, save=True)
-
+        artwork.picture.save(avatar_name[-35:], avatar_file, save=True)
     # gallery
     gallery_visuels, gall_created = createGalleryFromArtwork(artwork, artist_db, "Images de l'oeuvre")
     artwork.in_situ_galleries.add(gallery_visuels.id)
@@ -195,19 +194,22 @@ def populateAPI(data):
 
 
     # partners
+    # set base production
     orga_fresnoy = Organization.objects.get(
         name__icontains='le fresnoy')
     task_prod = OrganizationTask.objects.get(
         label__icontains='producteur')
 
-    prod_organization_task, pot_created = ProductionOrganizationTask.objects.get_or_create(
+    ProductionOrganizationTask.objects.get_or_create(
         task=task_prod, organization=orga_fresnoy, production=artwork)
+    
+    set_partners(artwork, artwork_partners, artwork_partners_media)
     
     # collaborators -> credits
     set_credits(artwork, artwork_credits)
 
     artwork.thanks_fr = markdownify.markdownify(artwork_thanks)
-    artwork.credits_fr = markdownify.markdownify(artwork_credits)
+    artwork.credits_fr = markdownify.markdownify(artwork_credits_description)
 
     if(partners_description):
         artwork.credits_fr += "\n\nDescription du partenariat:\n"
@@ -219,10 +221,15 @@ def populateAPI(data):
     # ARTWORK SAVE
     artwork.save()
 
+    print("END ARTWORK")
     print("  {} - {}".format(artwork, artwork.id))
+    print("*********")
 
     return artwork
 
+
+def replaceUrlMedia(str):
+    return str.replace("app/static/", "https://catalogue-panorama.lefresnoy.net/static/")
 
 
 def get_or_create(model, attr):
@@ -259,15 +266,130 @@ def select_english_text(str1, str2):
 
 
 def input_choices(values):
+
+    if not values:
+        return False
     
-    select = input("Plusieurs valeurs sont possible, selectionnez-en une :" 
-                   + str([str(id) + " : " + str(s) for id, s in enumerate(values)]))
+    print("Plusieurs valeurs sont possibles, selectionnez-en une :")
+    for id, value in enumerate(values):
+        print("{} : {}" .format(id, value))
+    print("n : pas dans la liste")
+    select = input("Votre choix : ")
+    
+    # select = input("Plusieurs valeurs sont possibles, selectionnez-en une :" 
+    #                + str([str(id) + " : " + str(s) for id, s in enumerate(values)]))
     try:
         select_int = int(select)
         selected = values[select_int]
         return selected
     except Exception as e:
         return False
+    
+
+def set_partners(artwork, partners_str, partners_media):
+    if partners_str.strip() == "":
+        return
+    # FORME - type : structure \n
+    partners_arr = partners_str.split("\n")
+    for partner in partners_arr:
+        # la forme Coproduction : Julien Taïb, Crossed Lab
+        partner = partner.strip()
+        if partner == "":
+            continue
+        if not ":" in partner:
+            # set default partenaire type
+            partner = "Partenaire : " + partner
+        
+        # TYPE 
+        partner_type_str = partner.split(":")[0].strip()
+        partner_types = getOrCreateMultiInstancesByStr(OrganizationTask, 'label', partner_type_str)
+
+        # ORGANIZATION
+        organization_str = partner.split(":")[1].strip()
+        organizations = getOrCreateMultiInstancesByStr(Organization, "name", organization_str)
+
+        # ADD logo to ORGA
+        for organization in organizations:
+            name = organization.name
+            if not organization.picture and partners_media:
+                print("Organisation : " + name + " est sans logo, est-ce qu'il est dans ce choix ? ")
+                media_choice = input_choices(partners_media)
+                if media_choice:
+                    name = media_choice.split('/')[-1]
+                    file = createFileFromUrl(media_choice)
+                    organization.picture.save(name[-35:], file, save=True)
+
+        
+        # HAVE TO 
+        # ONE type ONE organization
+        # One type Multi organizations
+        # Multi types -> problems One task
+        # Multi type multi organizations -> problem
+        if (len(partner_types) == 0 or 
+            len(organizations)==0 or
+            (len(partner_types) > 1 and len(organizations) > 1) ):
+            print("*****PROBLEME DE PARTNERS  ******")
+            print(partner)
+            continue
+        # partner : organization
+        elif len(partner_types) == 1 and len(organizations) == 1:
+            partner_type = partner_types[0]
+            organization = organizations[0]
+            pot, created = ProductionOrganizationTask.objects.get_or_create(
+                task=partner_type, organization=organization, production=artwork)
+            print(pot)
+        # partner : organization 1, organization 2
+        elif len(partner_types) == 1 and len(organizations) > 1:
+            partner_type = partner_types[0]
+            for organization in organizations:
+                pot, created = ProductionOrganizationTask.objects.get_or_create(
+                     task=partner_type, organization=organization, production=artwork)
+                print(pot)
+        # partner, coproduction  : organization
+        elif len(partner_types) > 1 and len(organizations) == 1:
+            organization = organizations[0]
+            for partner_type in partner_types:
+                pot, created = ProductionOrganizationTask.objects.get_or_create(
+                     task=partner_type, organization=organization, production=artwork)
+                print(pot)
+
+
+def getOrCreateMultiInstancesByStr(model, attr, txt_str):
+    instances = []
+
+    if "," in txt_str or  " et " in txt_str:
+        str_split = txt_str.split(",") if "," in txt_str else txt_str.split(" et ")
+        for s in str_split:
+            instance = getOrCreateModelInstanceByStr(model, attr, s)
+            instances.append(instance)
+    else:
+        instance = getOrCreateModelInstanceByStr(model, attr, txt_str)
+        instances.append(instance)
+
+    return instances
+
+
+def getOrCreateModelInstanceByStr(model, attr, txt_str):
+    
+    instance = False
+    
+    query = model.objects.filter(**{attr+"__iexact":txt_str})
+    if query.count() == 0:
+        query = model.objects.filter(**{attr+"__icontains":txt_str})
+    
+    if query.count() > 1:
+        print(str(model) + " (csv) : "+ txt_str)
+        instance = input_choices(query)
+        
+    elif query.count() == 1:
+        instance = query.first()
+
+    if not instance:
+        instance, created = model.objects.get_or_create(**{attr:txt_str.title()})
+        print("Création d'une instance" + str(model) + " : " + str(instance))
+
+    return instance
+
 
 
 def set_genre(aw, genre_str):
@@ -277,7 +399,10 @@ def set_genre(aw, genre_str):
         return
 
     modelGenre = FilmGenre if aw.polymorphic_ctype.model == 'film' else InstallationGenre
-    genre_query = modelGenre.objects.filter(label__icontains=genre_str)
+    # query genre
+    genre_query = modelGenre.objects.filter(label__iexact=genre_str)
+    if genre_query.count() == 0:
+        genre_query = modelGenre.objects.filter(label__icontains=genre_str)
 
     genre = False
     if genre_query and genre_query.count() == 1:
@@ -307,7 +432,7 @@ def set_credits(aw, credits):
     for credit in credits_arr:
 
         if not ":" in credit:
-            print("/!\\ credit n'a pas de ':'")
+            print("/!\\ credit n'a pas de ':'" + credit)
             continue        
         
         # SEARCH FOR USER
@@ -399,12 +524,15 @@ def get_or_create_user(user_str):
 
     # search by artist : ça arrive (SMITH?!)
     if not user_search:
-        artist_search = getArtistByNames(first_name, last_name, user_str)
-        search_list = getArtistByNames(first_name, last_name, user_str, True)
-        if artist_search and artist_search["dist"] >= .9:
-            artist = artist_search["artist"]
+        user_search = getArtistByNames("", "", user_str)
+        search_list_artist = getArtistByNames("", "", user_str, True)
+        if user_search and user_search["dist"] >= .9:
+            artist = user_search["artist"]
             user = artist.user
             created = False
+        else:
+            user_search = False
+            user = False
     
     # try user_search if we are not in previous cases
     if not user and not user_search:
@@ -413,27 +541,27 @@ def get_or_create_user(user_str):
 
     # search in DB
     if not user and user_search:
-        if user_search["dist"] < .9:
-            ask = input("Est-ce la même personne y/n? (db) {}  <-> {} (csv)".format(user_search["user"], user_str))
-            if "n" in ask:
-                user_search = False
-                created = False
-                print("Et dans cette liste ? ")
-                select_with_result_list = input_choices(search_list)
-                if select_with_result_list:
+        if user_search["dist"] <= 1:
+            print("Recherche d'un User : " + user_str)
+            # concat arrays if exist
+            list = search_list + search_list_artist if search_list_artist else search_list
+            select_with_result_list = input_choices(list)
+            if select_with_result_list:
+                if "user" in select_with_result_list:
                     user = select_with_result_list["user"]
-                    created = False
 
-            if "y" in ask:
-                user = user_search["user"]
+                if "artist" in select_with_result_list:
+                    artist = select_with_result_list['artist']
+                    user = artist.user
                 created = False
         else:
             user = user_search["user"]
             created = False
-            print("KNOW User : " + str(user))
+            print("KNOW User : " + str(user) + "(kart)  pour " + user_str + " (csv)")
+            # print(user_search)
                         
     if not user:
-        username = usernamize(first_name, last_name, True)
+        username = usernamize(first_name, last_name, False)
         user, created = User.objects.get_or_create(first_name=first_name.title(), last_name=last_name.title(), username=username)
         print("CREATE User : " + str(user))
 
@@ -443,19 +571,17 @@ def get_or_create_stafftask(task_str):
     print("SEARCH FOR TASK : " + task_str)
     # delete spaces
     task_str = task_str.strip()
-    # search by query
-    task_query = StaffTask.objects.filter(label__icontains=task_str)
+    # search by query exact and second time filter
+    task_query = StaffTask.objects.filter(label__iexact=task_str)
+    if task_query.count() == 0:
+        task_query = StaffTask.objects.filter(label__icontains=task_str)
+    # init task
     task = False
     # find more than one ? choose !
     if task_query.count() > 1:
-        task_choice = input("Pour  - " + task_str + " (csv) quel tâche choisir (db) ? : - " + task_str + " - "  
-                            + str([str(id) + " : " + s.label for id, s in enumerate(task_query)]))
-        try:
-            task_choice = int(task_choice)
-            task = task_query[task_choice]
-        except Exception as e:
-            # create it see below
-            task = False
+        print("Plusieurs tâches ont été trouvées pour : " + task_str)
+        task = input_choices(task_query)
+        
     elif task_query.count() == 1:
         task = task_query.first()
     if not task:
@@ -485,10 +611,6 @@ def getPlace(str_place):
     from geopy import distance
     
     from diffusion.models import Place
-
-
-    global DRY_RUN
-
 
     # recharche dans les places existant
     print( "Place cherche : ", str_place,".")
@@ -565,7 +687,7 @@ def createFileFromUrl(url):
     if(url == ""):
         return None
     
-    url = url.replace("app/static/", "https://catalogue-panorama.lefresnoy.net/static/")
+    # url = url.replace("app/static/", "https://catalogue-panorama.lefresnoy.net/static/")
 
     print("téléchargement du media : (...)" + url[-35:])
     
@@ -748,22 +870,21 @@ def run(*args):
     if 'DRY_RUN' in args:
         DRY_RUN = True
         print("DRY_RUN Script")
+        c = input("LE DRYRUN NE FONCTIONNE PAS ! Voulez-vous continuer ? Y/n")
+        if c == "n":
+            return
     # get the file
     fichier_csv = 'scripts/catalogue/catalogue.csv'  # 
 
     event, created = Event.objects.get_or_create(title="Panorama " + str(datetime.datetime.now().year+2-2000), 
-                                        starting_date=datetime.datetime.strptime(str(datetime.datetime.now().year), '%Y'),)
+                                        starting_date=datetime.datetime(datetime.datetime.now().year, 1, 1, 
+                                                                        tzinfo=pytz.timezone("Europe/Paris")),)
    
     
     with open(fichier_csv, 'r') as csvfile:
         lecteur_csv = csv.DictReader(csvfile, delimiter=',', quotechar='"' )
-        # d = next(lecteur_csv)
-        # d = next(lecteur_csv)
-        # d = next(lecteur_csv)
-        # d = next(lecteur_csv)
-        # d = next(lecteur_csv)
-        # data = map_csv_to_model(d)
-        # artwork = populateAPI(data)
+        # for i in range(10):
+        #     row = next(lecteur_csv)
 
         for row in lecteur_csv:
             data = map_csv_to_model(row)

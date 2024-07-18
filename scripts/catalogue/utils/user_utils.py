@@ -8,8 +8,6 @@ from django.db.models import CharField, Value
 
 from utils.kart_tools import *
 
-search_cache = {}
-
 def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
     """Retrieve the closest user from the first and last names given
 
@@ -20,7 +18,7 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
     - dist_min : (float) Maximum dist, return False if strinctly under
 
     Return:
-    - artistObj    : (Django obj / bool) The closest user object found in Kart. False if no match.
+    - userObj    : (Django obj / bool) The closest user object found in Kart. False if no match.
     - dist         : (float) Distance with the given names
     """
 
@@ -42,35 +40,15 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
     # Clean names from accents to
     if lastname:
         # lastname_accent = lastname
-        lastname = unidecode.unidecode(lastname).lower()
+        lastname = unidecode.unidecode(lastname).lower().strip()
     if firstname:
         # firstname_accent = firstname
-        firstname = unidecode.unidecode(firstname).lower()
+        firstname = unidecode.unidecode(firstname).lower().strip()
 
     fullname = f"{firstname} {lastname}"
 
     # Cache
     fullkey = f'{firstname} {lastname}'
-    try:
-        # logger.warning("cache", search_cache[fullkey])
-        return search_cache[fullkey] if listing else search_cache[fullkey][0]
-    except KeyError:
-        pass
-    except TypeError:
-        pass
-
-    # SEARCH WITH LASTNAME then FIRSTNAME
-    # # First filter by lastname similarity
-    # guessArtLN = Artist.objects.prefetch_related('user').annotate(
-    #     # Concat the full name "first last" to detect misclassifications like: "Hee Won -- Lee" where Hee Won is first
-    #     # name but can be stored as "Hee  -- Won Lee"
-    #     search_name=Concat('user__first_name__unaccent__lower',
-    #                        Value(' '), 'user__last_name__unaccent__lower')
-    # ).annotate(
-    #     similarity=TrigramSimilarity('search_name', fullname),
-    # ).filter(
-    #     similarity__gt=0.3
-    # ).order_by('-similarity')
 
     # First filter by lastname similarity
     guessArtLN = User.objects.annotate(
@@ -93,10 +71,10 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
 
             # Clear accents (store a version with accents for further accents issue detection)
             kart_lastname_accent = user_kart.last_name
-            kart_lastname = unidecode.unidecode(kart_lastname_accent).lower()
-            print("kart_lastname_accent", kart_lastname_accent,"kart_lastname", kart_lastname)
+            kart_lastname = unidecode.unidecode(kart_lastname_accent).lower().strip()
+            # print("kart_lastname_accent", kart_lastname_accent,"kart_lastname", kart_lastname)
             kart_firstname_accent = user_kart.first_name
-            kart_firstname = unidecode.unidecode(kart_firstname_accent).lower()
+            kart_firstname = unidecode.unidecode(kart_firstname_accent).lower().strip()
 
             kart_fullname_accent = user_kart.search_name
 
@@ -124,7 +102,7 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
                     Kart       first: >{kart_firstname}< last: >{kart_lastname}<
                     candidate  first: >{firstname}< last: >{lastname}<
                                             """)
-                    users_l.append({"user": user_kart, 'dist': dist_full*2})
+                    users_l.append({"user": user_kart, 'dist': dist_full})
 
 
 
@@ -218,10 +196,8 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
 
         # Return all results if listing is true, return the max otherwise
         if listing:
-            search_cache[fullkey] = users_l
             return users_l
         else:
-            search_cache[fullkey] = [users_l[0]]
             # Return the result if dist_min is respected (if required)
             if (dist_min is not False and users_l[0]['dist']>dist_min) or (not dist_min) :
                 return users_l[0]
@@ -229,6 +205,5 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
                 return False
     else:
         # research failed
-        search_cache[fullkey] = False
         return False
     #####
