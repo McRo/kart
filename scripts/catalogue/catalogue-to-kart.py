@@ -371,6 +371,7 @@ def set_partners(artwork, partners_str, partners_media):
 
 def getOrCreateMultiInstancesByStr(model, attr, txt_str):
     instances = []
+    txt_str = txt_str.strip()
 
     if "," in txt_str or  " et " in txt_str:
         str_split = txt_str.split(",") if "," in txt_str else txt_str.split(" et ")
@@ -387,6 +388,8 @@ def getOrCreateMultiInstancesByStr(model, attr, txt_str):
 def getOrCreateModelInstanceByStr(model, attr, txt_str):
     
     instance = False
+
+    txt_str = txt_str.strip()
     
     query = model.objects.filter(**{attr+"__iexact":txt_str})
     if query.count() == 0:
@@ -452,7 +455,7 @@ def set_credits(aw, credits):
             continue        
         
         # SEARCH FOR USER
-        user_str = credit.split(":")[0]
+        user_str = credit.split(":")[0].strip()
         print("SEARCH FOR USER : " + user_str)
         users = []
         user = False
@@ -483,7 +486,7 @@ def set_credits(aw, credits):
             staffs.append(staff)
 
         # search for task
-        task_str = credit.split(":")[1]
+        task_str = credit.split(":")[1].strip()
         # sometimes Benjamin Griere : Graphisme 3D, Développeur 3D
         tasks = getOrCreateMultiInstancesByStr(StaffTask, 'label', task_str)
 
