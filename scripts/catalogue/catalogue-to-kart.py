@@ -737,7 +737,7 @@ def createMediaFromUrl(url, gallery_id):
 
     medium = Medium()
     medium.gallery_id = gallery_id
-    medium.picture.save(name[:35], file, save=True)
+    medium.picture.save(name[-35:], file, save=True)
 
     medium.save()
     
