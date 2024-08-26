@@ -132,8 +132,9 @@ def populateAPI(data):
         # 20:00
         duration = artwork_duration.split(":")
         artwork.duration = datetime.timedelta(
-            # hours=int(duration[0]), minutes=int(duration[1]))
-            minutes=int(duration[0]), seconds=int(duration[1]))
+            #TODO a tester il doit y avoir des format différents
+            hours=int(duration[0]), minutes=int(duration[1]))            
+            # minutes=int(duration[0]), seconds=int(duration[1]))
         
    
     
