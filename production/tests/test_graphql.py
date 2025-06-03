@@ -7,7 +7,7 @@ from production.tests.factories import (
     EventFactory,
     PerformanceFactory,
     ArtworkFactory,
-    KeywordFactory
+    KeywordFactory,
 )
 from people.tests.factories import ArtistFactory
 
@@ -89,7 +89,12 @@ class TestGQLPages(TestCase):
                     }\
                 }'
         schema = graphene.Schema(query=Query)
-        result = schema.execute(query, variables={'idExhib': event.id, })
+        result = schema.execute(
+            query,
+            variables={
+                'idExhib': event.id,
+            },
+        )
         self.assertIsNone(result.errors)
 
     # Following tests about artwork's keywords
