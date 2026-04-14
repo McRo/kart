@@ -230,9 +230,9 @@ class ArtistEmbeddedInterface(graphene.Interface):
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
 
     def resolve_displayPhoto(parent, info):
-        if parent.artist.artist_photo != "":
+        if parent.artist.artist_photo and parent.artist.artist_photo != "":
             return parent.artist.artist_photo
-        if hasattr(parent.user, 'profile'):
+        if hasattr(parent.artist, 'user') and hasattr(parent.artist.user, 'profile'):    
             return parent.artist.user.profile.photo if parent.artist.user.profile.photo else ""
         return ""
 
@@ -363,9 +363,9 @@ class ArtistType(UserType):
 
     def resolve_displayPhoto(parent, info):
         '''Return artist photo if exists, user photo otherwise'''
-        if parent.artist_photo != "":
+        if parent.artist_photo and parent.artist_photo != "":
             return parent.artist_photo
-        if hasattr(parent.user, 'profile'):
+        if hasattr(parent, 'user') and hasattr(parent.user, 'profile'):
             return parent.user.profile.photo if parent.user.profile.photo else ""
         return ""
 

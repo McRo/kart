@@ -73,7 +73,7 @@ class StudentType(DjangoObjectType):
             return ""
 
     def resolve_photo(parent, info):
-        if parent.artist.artist_photo:
+        if parent.artist.artist_photo and parent.artist.artist_photo != "":
             return parent.artist.artist_photo
         if hasattr(parent.artist.user, "profile"):
             return parent.artist.user.profile.photo if parent.artist.user.profile.photo else ""
