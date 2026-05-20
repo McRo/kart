@@ -137,8 +137,8 @@ def user_unicode(self):
                 self.profile.preferred_first_name or self.profile.preferred_last_name
             ):
         return '{0} {1}'.format(
-            self.profile.preferred_first_name.title(),
-            self.profile.preferred_last_name.title()
+            self.profile.preferred_first_name.title() if self.profile.preferred_first_name else "",
+            self.profile.preferred_last_name.title() if self.profile.preferred_last_name else ""
         )
     return '{0} {1}'.format(self.first_name.title(), self.last_name.title())
 
