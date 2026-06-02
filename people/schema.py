@@ -17,7 +17,6 @@ from diffusion.models import Diffusion
 from common.schema import WebsiteType
 from diffusion.schema import DiffusionType
 
-
 # User fields
 USER_FIELDS = [ff.name for ff in get_user_model()._meta.get_fields()]
 # FresnoyProfile fields
@@ -43,7 +42,7 @@ def order(artists, orderby):
                 art = x.user.last_name
         else:
             raise Exception("orderby value is undefined or unknown")
-        return (art)
+        return art
 
     return sorted(artists, key=lambda x: tt(x))
 
@@ -120,12 +119,14 @@ class DynNameResolver:
         else:
             return None
 
+
 # INTERFACES
 # interfaces for objects embedding a user/artist field (indirect polymorphism)
 
 
 class UserEmbeddedInterface(graphene.Interface):
     '''Interface of models embedding a user field (indirect polymorphism)'''
+
     firstName = graphene.String(resolver=DynNameResolver())
     lastName = graphene.String()
     photo = graphene.String()
@@ -135,84 +136,49 @@ class ArtistEmbeddedInterface(graphene.Interface):
     '''Interface of models embedding an artist field (indirect polymorphism)'''
 
     # User fields
-    firstName = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    lastName = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    firstName = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    lastName = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
 
     # FresnoyProfile fields
-    photo = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    gender = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    nationality = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    birthdate = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    birthplace = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    birthplace_country = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    deathdate = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    deathplace = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    deathplace_country = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    homeland_address = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    homeland_zipcode = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    homeland_town = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    homeland_country = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    residence_address = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    residence_zipcode = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    residence_town = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    residence_country = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    homeland_phone = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    residence_phone = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    social_insurance_number = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    family_status = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    mother_tongue = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    other_language = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    cursus = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    photo = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    gender = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    nationality = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    birthdate = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    birthplace = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    birthplace_country = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    deathdate = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    deathplace = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    deathplace_country = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_address = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_zipcode = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_town = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_country = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_address = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_zipcode = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_town = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_country = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_phone = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_phone = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    social_insurance_number = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    family_status = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    mother_tongue = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    other_language = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    cursus = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
 
     # Artist fields
-    nickname = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    artist_photo = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    nickname = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    artist_photo = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
     collectives = graphene.List("people.schema.ArtistType")
     members = graphene.List("people.schema.ArtistType")
     displayName = graphene.String()
     displayPhoto = graphene.String()
-    bioShortFr = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    bioShortEn = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    bioFr = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    bioEn = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    updatedOn = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    twitterAccount = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    facebookProfile = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioShortFr = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioShortEn = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioFr = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioEn = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    updatedOn = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    twitterAccount = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
+    facebookProfile = graphene.String(resolver=DynNameResolver(interface="ArtistEmbedded"))
     websites = graphene.List(WebsiteType)
 
     diffusions = graphene.List(DiffusionType)
@@ -232,13 +198,14 @@ class ArtistEmbeddedInterface(graphene.Interface):
     def resolve_displayPhoto(parent, info):
         if parent.artist.artist_photo and parent.artist.artist_photo != "":
             return parent.artist.artist_photo
-        if hasattr(parent.artist, 'user') and hasattr(parent.artist.user, 'profile'):    
+        if hasattr(parent.artist, 'user') and hasattr(parent.artist.user, 'profile'):
             return parent.artist.user.profile.photo if parent.artist.user.profile.photo else ""
         return ""
 
 
 class ProfileEmbeddedInterface(graphene.Interface):
     '''Interface of models embedding an artist field (indirect polymorphism)'''
+
     gender = graphene.String()
     nationality = graphene.String()
     birthdate = graphene.String()
@@ -262,6 +229,7 @@ class ProfileEmbeddedInterface(graphene.Interface):
     mother_tongue = graphene.String()
     other_language = graphene.String()
     cursus = graphene.String()
+
 
 # User
 
@@ -317,6 +285,7 @@ class FresnoyProfileInterface(graphene.Interface):
 class FresnoyProfileType(DjangoObjectType):
     class Meta:
         model = FresnoyProfile
+
 
 # Artist
 
@@ -398,13 +367,13 @@ class Query(graphene.ObjectType):
 
     artist = graphene.Field(ArtistType, id=graphene.Int())
     artists = graphene.List(
-            ArtistType,
-            name=graphene.String(required=False),
-            isStudent=graphene.Boolean(required=False),
-            isTeacher=graphene.Boolean(required=False),
-            isScienceStudent=graphene.Boolean(required=False),
-            isVisitingStudent=graphene.Boolean(required=False)
-        )
+        ArtistType,
+        name=graphene.String(required=False),
+        isStudent=graphene.Boolean(required=False),
+        isTeacher=graphene.Boolean(required=False),
+        isScienceStudent=graphene.Boolean(required=False),
+        isVisitingStudent=graphene.Boolean(required=False),
+    )
 
     artists_pagination = DjangoFilterConnectionField(
         ArtistType,
@@ -413,7 +382,8 @@ class Query(graphene.ObjectType):
         isStudent=graphene.Boolean(required=False),
         isTeacher=graphene.Boolean(required=False),
         isScienceStudent=graphene.Boolean(required=False),
-        isVisitingStudent=graphene.Boolean(required=False))
+        isVisitingStudent=graphene.Boolean(required=False),
+    )
 
     profile = graphene.Field(FresnoyProfileType, id=graphene.Int())
     profiles = graphene.List(FresnoyProfileType)
@@ -422,10 +392,17 @@ class Query(graphene.ObjectType):
         users = get_user_model().objects.all()
         name = kwargs.get('name')
         if name:
-            users = users.annotate(name=Concat(F('first_name'), Value(' '), F('last_name'),
-                                               Value(' '), F('profile__preferred_first_name'),
-                                               Value(' '), F('profile__preferred_last_name')))\
-                         .filter(Q(artist__nickname__unaccent__icontains=name) | Q(name__unaccent__icontains=name))
+            users = users.annotate(
+                name=Concat(
+                    F('first_name'),
+                    Value(' '),
+                    F('last_name'),
+                    Value(' '),
+                    F('profile__preferred_first_name'),
+                    Value(' '),
+                    F('profile__preferred_last_name'),
+                )
+            ).filter(Q(artist__nickname__unaccent__icontains=name) | Q(name__unaccent__icontains=name))
         return users
 
     def resolve_user(root, info, **kwargs):
@@ -435,26 +412,29 @@ class Query(graphene.ObjectType):
         return None
 
     def resolve_artists(
-                root,
-                info,
-                isStudent=None,
-                isTeacher=None,
-                isScienceStudent=None,
-                isVisitingStudent=None,
-                **kwargs
-            ):
+        root, info, isStudent=None, isTeacher=None, isScienceStudent=None, isVisitingStudent=None, **kwargs
+    ):
         # get current (is_current_setup)
         name = kwargs.get('name')
         artists = Artist.objects.all()
         if name != "" and name is not None:
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
-            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name'),
-                                                          Value(' '), F('user__profile__preferred_first_name'),
-                                                          Value(' '), F('user__profile__preferred_last_name')))\
-                                    .filter(Q(nickname__unaccent__icontains=name) |
-                                            Q(user__first_name__unaccent__icontains=name) |
-                                            Q(user__last_name__unaccent__icontains=name) |
-                                            Q(name__unaccent__icontains=name))
+            artists = Artist.objects.annotate(
+                name=Concat(
+                    F('user__first_name'),
+                    Value(' '),
+                    F('user__last_name'),
+                    Value(' '),
+                    F('user__profile__preferred_first_name'),
+                    Value(' '),
+                    F('user__profile__preferred_last_name'),
+                )
+            ).filter(
+                Q(nickname__unaccent__icontains=name)
+                | Q(user__first_name__unaccent__icontains=name)
+                | Q(user__last_name__unaccent__icontains=name)
+                | Q(name__unaccent__icontains=name)
+            )
         if isStudent:
             artists = artists.filter(student__isnull=False)
         if isTeacher:
@@ -473,22 +453,20 @@ class Query(graphene.ObjectType):
         return None
 
     def resolve_artists_pagination(
-            root,
-            info,
-            isStudent=None,
-            isTeacher=None,
-            isScienceStudent=None,
-            isVisitingStudent=None,
-            **kwargs):
+        root, info, isStudent=None, isTeacher=None, isScienceStudent=None, isVisitingStudent=None, **kwargs
+    ):
         name = kwargs.get('name')
         artists = Artist.objects.all()
         if name != "":
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
-            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
-                                    .filter(Q(nickname__unaccent__icontains=name) |
-                                            Q(user__first_name__unaccent__icontains=name) |
-                                            Q(user__last_name__unaccent__icontains=name) |
-                                            Q(name__unaccent__icontains=name))
+            artists = Artist.objects.annotate(
+                name=Concat(F('user__first_name'), Value(' '), F('user__last_name'))
+            ).filter(
+                Q(nickname__unaccent__icontains=name)
+                | Q(user__first_name__unaccent__icontains=name)
+                | Q(user__last_name__unaccent__icontains=name)
+                | Q(name__unaccent__icontains=name)
+            )
         if isStudent:
             artists = artists.filter(student__isnull=False)
         if isTeacher:

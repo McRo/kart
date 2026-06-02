@@ -8,13 +8,15 @@ import common.schema
 import diffusion.schema
 
 
-class Query(people.schema.Query,
-            school.schema.Query,
-            production.schema.Query,
-            diffusion.schema.Query,
-            assets.schema.Query,
-            common.schema.Query,
-            graphene.ObjectType):
+class Query(
+    people.schema.Query,
+    school.schema.Query,
+    production.schema.Query,
+    diffusion.schema.Query,
+    assets.schema.Query,
+    common.schema.Query,
+    graphene.ObjectType,
+):
     pass
 
 

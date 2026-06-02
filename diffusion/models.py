@@ -218,7 +218,7 @@ class Diffusion(models.Model):
     on_competition = models.BooleanField(default=False, help_text="IN / OFF : On competion or not")
     # online diffusion (streaming, tv, radio)
     online = models.BooleanField(default=False, help_text="ON / OFF : Online diffusion or not")
-    
+
     # Need to valid diffusions infos before publication, so we add a boolean field to manage this validation
     published = models.BooleanField(default=False, help_text="Diffusion information is validated and can be published")
 

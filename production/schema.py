@@ -10,8 +10,18 @@ from taggit.managers import TaggableManager
 from taggit.models import Tag
 from itertools import chain
 
-from .models import Production, Artwork, Film, Installation, \
-    Performance, Event, Task, ProductionOrganizationTask, StaffTask, ProductionStaffTask
+from .models import (
+    Production,
+    Artwork,
+    Film,
+    Installation,
+    Performance,
+    Event,
+    Task,
+    ProductionOrganizationTask,
+    StaffTask,
+    ProductionStaffTask,
+)
 
 from people.schema import ArtistType
 from assets.schema import GalleryType
@@ -52,6 +62,7 @@ class ProductionStaffTaskType(TaskType):
 class PartnerType(DjangoObjectType):
     class Meta:
         model = ProductionOrganizationTask
+
     name = graphene.String()
     task_name = graphene.String()
     tasks = graphene.Field(TaskType)
@@ -143,6 +154,7 @@ class ProductionType(DjangoObjectType):
 class KeywordType(DjangoObjectType):
     class Meta:
         model = Tag
+
     name = graphene.String()
     slug = graphene.String()
 
@@ -174,19 +186,24 @@ class ArtworkType(ProductionType):
         return None
 
     processGalleries = graphene.List(
-        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="process"))
+        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="process")
+    )
 
     mediationGalleries = graphene.List(
-        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="mediation"))
+        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="mediation")
+    )
 
     inSituGalleries = graphene.List(
-        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="insitu"))
+        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="insitu")
+    )
 
     pressGalleries = graphene.List(
-        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="press"))
+        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="press")
+    )
 
     teaserGalleries = graphene.List(
-        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="teaser"))
+        GalleryType, resolver=resolve_gallery, galType=graphene.String(default_value="teaser")
+    )
 
     # Diffusions
     diffusions = graphene.List(DiffusionType)
@@ -213,7 +230,7 @@ class ArtworkType(ProductionType):
     relArtworks = graphene.List(graphene.Int, aw_context=graphene.String())
 
     def resolve_relArtworks(parent, info, aw_context="authors", **kwargs):
-        ''' Related Artworks are artworks from same author'''
+        '''Related Artworks are artworks from same author'''
         if aw_context:
             if aw_context == "authors":
                 auth = parent.authors.all()
@@ -239,6 +256,7 @@ class ArtworkPagination(django_filters.FilterSet):
 class ArtworkPanoType(ArtworkType):
     class Meta:
         model = Artwork
+
     """Deliver an artwork and the prev/next ones"""
     pass
 
@@ -246,8 +264,7 @@ class ArtworkPanoType(ArtworkType):
 class FilmType(ArtworkType):
     class Meta:
         model = Film
-        interfaces = (graphene.relay.Node,
-                      ProductionInterface, ArtworkInterface)
+        interfaces = (graphene.relay.Node, ProductionInterface, ArtworkInterface)
 
     duration = graphene.String()
 
@@ -255,15 +272,13 @@ class FilmType(ArtworkType):
 class InstallationType(ArtworkType):
     class Meta:
         model = Installation
-        interfaces = (graphene.relay.Node,
-                      ProductionInterface, ArtworkInterface)
+        interfaces = (graphene.relay.Node, ProductionInterface, ArtworkInterface)
 
 
 class PerformanceType(ArtworkType):
     class Meta:
         model = Performance
-        interfaces = (graphene.relay.Node,
-                      ProductionInterface, ArtworkInterface)
+        interfaces = (graphene.relay.Node, ProductionInterface, ArtworkInterface)
 
 
 def order(aws, orderby):
@@ -293,7 +308,7 @@ def order(aws, orderby):
             art = x.id
         else:
             raise Exception("orderby value is undefined or unknown")
-        return (art)
+        return art
 
     return sorted(aws, key=lambda x: tt(x))
 
@@ -311,65 +326,73 @@ class EventType(DjangoObjectType):
         model = Event
         interfaces = (ProductionInterface,)
 
-    artworks = graphene.List(
-        ArtworkType, orderby=graphene.String(default_value="author"))
+    artworks = graphene.List(ArtworkType, orderby=graphene.String(default_value="author"))
     # artwork = graphene.Field(ArtworkType, id=graphene.ID())
     artworkExhib = graphene.Field(ArtworkEventType, id=graphene.ID())
 
     place = graphene.Field(PlaceType)
+    websites = graphene.List(WebsiteType, url=graphene.String())
 
     def resolve_artworkExhib(parent, info, **kwargs):
         id = kwargs.get('id')
 
-        aws = list(chain(parent.installations.all(),
-                         parent.films.all(), parent.performances.all()))
+        aws = list(chain(parent.installations.all(), parent.films.all(), parent.performances.all()))
 
         if id is not None:
             aw = Artwork.objects.get(pk=id)
             if aw not in aws:
-                raise Exception(
-                    "The artwork is not programmed in the current event")
+                raise Exception("The artwork is not programmed in the current event")
 
             awsByAlpha = order(aws, "title")
             awsByAuthor = order(aws, "author")
 
-            ind = awsByAlpha.index(aw)+1
+            ind = awsByAlpha.index(aw) + 1
             #  if out of maximmum bound, restart from 1st index
             if ind == len(awsByAlpha):
                 ind = 0
             next_alpha = awsByAlpha[ind]
 
-            ind = awsByAlpha.index(aw)-1
+            ind = awsByAlpha.index(aw) - 1
             if ind < -len(awsByAlpha):
                 # if out of minium bound, restart from last index
                 ind = len(awsByAlpha) - 1
             prev_alpha = awsByAlpha[ind]
 
-            ind = awsByAuthor.index(aw)+1
+            ind = awsByAuthor.index(aw) + 1
             #  if out of maximmum bound, restart from 1st index
             if ind == len(awsByAuthor):
                 ind = 0
             next_author = awsByAuthor[ind]
 
-            ind = awsByAuthor.index(aw)-1
+            ind = awsByAuthor.index(aw) - 1
             if ind < -len(awsByAuthor):
                 # if out of minium bound, restart from last index
                 ind = len(awsByAuthor) - 1
             prev_author = awsByAuthor[ind]
 
-            return ArtworkEventType(artwork=aw, next_alpha=next_alpha, prev_alpha=prev_alpha,
-                                    prev_author=prev_author, next_author=next_author)
+            return ArtworkEventType(
+                artwork=aw,
+                next_alpha=next_alpha,
+                prev_alpha=prev_alpha,
+                prev_author=prev_author,
+                next_author=next_author,
+            )
         return None
 
     def resolve_artworks(parent, info, orderby=None, **kwargs):
 
         # Collect all artworks
-        aws = list(chain(parent.installations.all(),
-                   parent.films.all(), parent.performances.all()))
+        aws = list(chain(parent.installations.all(), parent.films.all(), parent.performances.all()))
 
         if orderby:
             return order(aws, orderby)
         return aws
+
+    def resolve_websites(parent, info, url=None, **kwargs):
+        qs = parent.websites.all()
+        if url is not None:
+            qs = qs.filter(url__icontains=url)
+        return qs
 
 
 class ExhibitionType(EventType):
@@ -380,18 +403,17 @@ class ExhibitionType(EventType):
 class Query(graphene.ObjectType):
 
     production = graphene.Field(ProductionType, id=graphene.Int())
-    productions = graphene.List(
-        ProductionInterface, titleStartsWith=graphene.String())
+    productions = graphene.List(ProductionInterface, titleStartsWith=graphene.String())
 
     artwork = graphene.Field(ArtworkType, id=graphene.Int())
 
     artworks = graphene.List(
-            ArtworkInterface,
-            title=graphene.String(required=False),
-            hasKeywordName=graphene.List(graphene.String, required=False),
-            belongProductionYear=graphene.String(required=False),
-            hasType=graphene.String(required=False)
-        )
+        ArtworkInterface,
+        title=graphene.String(required=False),
+        hasKeywordName=graphene.List(graphene.String, required=False),
+        belongProductionYear=graphene.String(required=False),
+        hasType=graphene.String(required=False),
+    )
 
     artworks_pagination = DjangoFilterConnectionField(
         ArtworkType,
@@ -399,7 +421,8 @@ class Query(graphene.ObjectType):
         title=graphene.String(required=False),
         hasKeywordName=graphene.List(graphene.String, required=False),
         belongProductionYear=graphene.String(required=False),
-        hasType=graphene.String(required=False))
+        hasType=graphene.String(required=False),
+    )
 
     film = graphene.Field(FilmType, id=graphene.Int())
     films = graphene.List(FilmType)
@@ -411,8 +434,7 @@ class Query(graphene.ObjectType):
     performances = graphene.List(PerformanceType)
 
     event = graphene.Field(EventType, id=graphene.Int())
-    events = graphene.List(EventType, eventTitleContains=graphene.String(),
-                           eventPlaceStartWith=graphene.String())
+    events = graphene.List(EventType, eventTitleContains=graphene.String(), eventPlaceStartWith=graphene.String())
 
     exhibition = graphene.Field(ExhibitionType, id=graphene.Int())
     exhibitions = graphene.List(ExhibitionType)
@@ -431,8 +453,7 @@ class Query(graphene.ObjectType):
         productions = Production.objects.all()
 
         if titleStartsWith:
-            productions = productions.filter(
-                title__istartswith=titleStartsWith)
+            productions = productions.filter(title__istartswith=titleStartsWith)
             return productions
         return productions
 
@@ -450,26 +471,21 @@ class Query(graphene.ObjectType):
 
         if title:
             artworks = artworks.filter(
-                Q(title__unaccent__icontains=title) |
-                Q(former_title__unaccent__icontains=title) |
-                Q(subtitle__unaccent__icontains=title)
+                Q(title__unaccent__icontains=title)
+                | Q(former_title__unaccent__icontains=title)
+                | Q(subtitle__unaccent__icontains=title)
             )
         if hasKeywordName and hasKeywordName[0] != "":
-            artworks = artworks.filter(
-                keywords__name__in=hasKeywordName)
+            artworks = artworks.filter(keywords__name__in=hasKeywordName)
         if belongProductionYear:
-            artworks = artworks.filter(
-                production_date__year=belongProductionYear)
+            artworks = artworks.filter(production_date__year=belongProductionYear)
         if hasType:
             if hasType.lower() == 'film':
-                artworks = artworks.filter(
-                    film__isnull=False)
+                artworks = artworks.filter(film__isnull=False)
             elif hasType.lower() == 'performance':
-                artworks = artworks.filter(
-                    performance__isnull=False)
+                artworks = artworks.filter(performance__isnull=False)
             elif hasType.lower() == 'installation':
-                artworks = artworks.filter(
-                    installation__isnull=False)
+                artworks = artworks.filter(installation__isnull=False)
             else:
                 # Empty response if artworks aren't one of the previous type
                 artworks = artworks.filter(id__in=[])
@@ -486,26 +502,23 @@ class Query(graphene.ObjectType):
 
         title = kwargs.get('title')
         if title:
-            return Artwork.objects.filter(Q(title__unaccent__icontains=title) |
-                                          Q(former_title__unaccent__icontains=title) |
-                                          Q(subtitle__unaccent__icontains=title))
+            return Artwork.objects.filter(
+                Q(title__unaccent__icontains=title)
+                | Q(former_title__unaccent__icontains=title)
+                | Q(subtitle__unaccent__icontains=title)
+            )
 
         if hasKeywordName and hasKeywordName[0] != "":
-            artworks_pagination = artworks_pagination.filter(
-                keywords__name__in=hasKeywordName)
+            artworks_pagination = artworks_pagination.filter(keywords__name__in=hasKeywordName)
         if belongProductionYear:
-            artworks_pagination = artworks_pagination.filter(
-                production_date__year=belongProductionYear)
+            artworks_pagination = artworks_pagination.filter(production_date__year=belongProductionYear)
         if hasType:
             if hasType == 'Film':
-                artworks_pagination = artworks_pagination.filter(
-                    film__isnull=False)
+                artworks_pagination = artworks_pagination.filter(film__isnull=False)
             elif hasType == 'Performance':
-                artworks_pagination = artworks_pagination.filter(
-                    performance__isnull=False)
+                artworks_pagination = artworks_pagination.filter(performance__isnull=False)
             elif hasType == 'Installation':
-                artworks_pagination = artworks_pagination.filter(
-                    installation__isnull=False)
+                artworks_pagination = artworks_pagination.filter(installation__isnull=False)
             else:
                 # Empty response if artworks aren't one of the previous type
                 artworks_pagination = artworks_pagination.filter(id__in=[])
@@ -546,17 +559,22 @@ class Query(graphene.ObjectType):
         if eventTitleContains:
             return Event.objects.filter(
                 title__icontains=eventTitleContains,
-                )
+            )
         if eventPlaceStartWith:
-            return Diffusion.objects.filter(
-                place__name__unaccent__istartswith=eventPlaceStartWith,
-                ) | Diffusion.objects.filter(
-                place__city__unaccent__istartswith=eventPlaceStartWith,
-                ) | Diffusion.objects.filter(
-                place__country__unaccent__iexact=eventPlaceStartWith,
-                ) | Diffusion.objects.filter(
-                place__country__unaccent__iname=eventPlaceStartWith,
+            return (
+                Diffusion.objects.filter(
+                    place__name__unaccent__istartswith=eventPlaceStartWith,
                 )
+                | Diffusion.objects.filter(
+                    place__city__unaccent__istartswith=eventPlaceStartWith,
+                )
+                | Diffusion.objects.filter(
+                    place__country__unaccent__iexact=eventPlaceStartWith,
+                )
+                | Diffusion.objects.filter(
+                    place__country__unaccent__iname=eventPlaceStartWith,
+                )
+            )
         return Event.objects.all()
 
     def resolve_event(root, info, **kwargs):
