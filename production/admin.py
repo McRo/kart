@@ -194,16 +194,20 @@ class ItineraryAdmin(admin.ModelAdmin):
 
 @admin.register(FilmGenre)
 class FilmGenreAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ['label']
+    list_display = ('label',)
 
 
 @admin.register(InstallationGenre)
 class InstallationGenreAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ['label']
+    list_display = ('label',)
 
 
 @admin.register(OrganizationTask)
 class OrganizationTaskAdmin(admin.ModelAdmin):
+    search_fields = ['label', 'description']
+    list_display = ('label',)
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
     }
@@ -212,6 +216,8 @@ class OrganizationTaskAdmin(admin.ModelAdmin):
 
 @admin.register(StaffTask)
 class StaffTaskAdmin(admin.ModelAdmin):
+    search_fields = ['label', 'description']
+    list_display = ('label',)
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
     }

@@ -84,6 +84,8 @@ class MetaEventAdmin(admin.ModelAdmin):
 
 
 class MetaAwardAdmin(admin.ModelAdmin):
+    search_fields = ['label', 'description', 'event__title']
+    list_display = ('label', 'event', 'type', 'task')
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
     }

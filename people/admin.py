@@ -84,10 +84,23 @@ class FresnoyProfileAdmin(UserAdmin):
     """Admin for Use and additionnal profile fields."""
 
     inlines = (FresnoyProfileInline,)
-    list_display = ('username', 'first_name', 'last_name', 'preferred_name', 'email', 'is_staff',)
+    list_display = (
+        'username',
+        'first_name',
+        'last_name',
+        'preferred_name',
+        'email',
+        'is_staff',
+    )
     ordering = ('first_name', 'last_name', 'profile__preferred_first_name')
-    search_fields = ('username', 'first_name', 'last_name', 'email', 'profile__preferred_first_name',
-                     'profile__preferred_last_name')
+    search_fields = (
+        'username',
+        'first_name',
+        'last_name',
+        'email',
+        'profile__preferred_first_name',
+        'profile__preferred_last_name',
+    )
     add_form = UserCreateForm
     add_fieldsets = (
         (
@@ -102,6 +115,7 @@ class FresnoyProfileAdmin(UserAdmin):
         if hasattr(obj, 'profile') and (obj.profile.preferred_first_name or obj.profile.preferred_last_name):
             return "{} {}".format(obj.profile.preferred_first_name, obj.profile.preferred_last_name)
         return ""
+
     # describe 'preferred_name'
     preferred_name.short_description = 'Nom d\'usage'
     # order by preferred first name
@@ -133,12 +147,10 @@ class OrganizationAdmin(GuardedModelAdmin):
 
 
 def user_unicode(self):
-    if hasattr(self, 'profile') and (
-                self.profile.preferred_first_name or self.profile.preferred_last_name
-            ):
+    if hasattr(self, 'profile') and (self.profile.preferred_first_name or self.profile.preferred_last_name):
         return '{0} {1}'.format(
             self.profile.preferred_first_name.title() if self.profile.preferred_first_name else "",
-            self.profile.preferred_last_name.title() if self.profile.preferred_last_name else ""
+            self.profile.preferred_last_name.title() if self.profile.preferred_last_name else "",
         )
     return '{0} {1}'.format(self.first_name.title(), self.last_name.title())
 
