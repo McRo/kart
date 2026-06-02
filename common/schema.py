@@ -18,3 +18,9 @@ class Query(graphene.ObjectType):
         if url is not None:
             qs = qs.filter(url__icontains=url)
         return qs
+
+    def resolve_website(self, info, id):
+        try:
+            return Website.objects.get(pk=id)
+        except Website.DoesNotExist:
+            return None
