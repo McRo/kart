@@ -206,7 +206,16 @@ class ArtworkType(ProductionType):
     )
 
     # Diffusions
-    diffusions = graphene.List(DiffusionType)
+    diffusions = graphene.List(
+        DiffusionType,
+        eventTitleContains=graphene.String(),
+        eventYear=graphene.Int(),
+        placeStartWith=graphene.String(),
+        artworkTitleContains=graphene.String(),
+        artworkArtistNameStartWith=graphene.String(),
+        orderBy=graphene.String(),
+        limit=graphene.Int(),
+    )
 
     # Resolvers
     def resolve_type(parent, info):
@@ -245,6 +254,65 @@ class ArtworkType(ProductionType):
     @convert_django_field.register(TaggableManager)
     def convert_field_to_string(field, registry=None):
         return graphene.List(graphene.String, source='get_tags')
+
+    def resolve_diffusions(
+        root,
+        info,
+        eventTitleContains=None,
+        eventPlaceStartWith=None,
+        eventYear=None,
+        artworkTitleContains=None,
+        artworkArtistNameStartWith=None,
+        orderBy=None,
+        limit=None,
+        **kwargs
+    ):
+
+        diffusion = root.diffusion
+
+        if eventTitleContains:
+            diffusion = diffusion.filter(
+                event__title__icontains=eventTitleContains,
+            )
+
+        if eventPlaceStartWith:
+            diffusion = (
+                diffusion.filter(
+                    event__place__name__istartswith=eventPlaceStartWith,
+                )
+                | diffusion.filter(
+                    event__place__city__istartswith=eventPlaceStartWith,
+                )
+                | diffusion.filter(
+                    event__place__country__iexact=eventPlaceStartWith,
+                )
+                | diffusion.filter(
+                    event__place__country__iname=eventPlaceStartWith,
+                )
+            )
+
+        if artworkTitleContains:
+            diffusion = diffusion.filter(
+                artwork__title__icontains=artworkTitleContains,
+            )
+
+        if artworkArtistNameStartWith:
+            diffusion = (
+                diffusion.filter(artwork__authors__nickname__istartswith=artworkArtistNameStartWith)
+                | diffusion.filter(artwork__authors__user__first_name__istartswith=artworkArtistNameStartWith)
+                | diffusion.filter(artwork__authors__user__last_name__istartswith=artworkArtistNameStartWith)
+            )
+
+        if eventYear:
+            diffusion = diffusion.filter(event__starting_date__year=eventYear)
+
+        if orderBy:
+            diffusion = diffusion.order_by(orderBy)
+
+        if limit:
+            diffusion = diffusion[:limit]
+
+        return diffusion.distinct()
 
 
 class ArtworkPagination(django_filters.FilterSet):
